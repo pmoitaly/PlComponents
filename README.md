@@ -87,5 +87,4 @@ If you wish to contribute, feel free to open issues, submit pull requests, or pr
 
 ## License
 
-Released under the **MIT License**.  
-See the `LICENSE` file for details.
+Released under the **MIT License**.  See the `LICENSE` file for details.
