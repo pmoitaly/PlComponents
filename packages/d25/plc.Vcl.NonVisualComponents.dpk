@@ -1,0 +1,54 @@
+package plc.Vcl.NonVisualComponents;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE RELEASE}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'Pl Components new VCL components'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  vclimg;
+
+contains
+  PlLanguage in '..\..\src\PlLanguage.pas',
+  PlLockWndManager in '..\..\src\PlLockWndManager.pas',
+  PlStyleMenuManager in '..\..\src\PlStyleMenuManager.pas',
+  PlRunTimeDesigner in '..\..\src\PlRunTimeDesigner.pas',
+  PlDirectoryWatcher in '..\..\src\PlDirectoryWatcher.pas',
+  PlMenuFromFolder in '..\..\src\PlMenuFromFolder.pas',
+  PlRecentFilesManager in '..\..\src\PlRecentFilesManager.pas',
+  PlLanguageServer in '..\..\src\PlLanguageServer.pas',
+  PlRecentFilesComponent in '..\..\src\PlRecentFilesComponent.pas',
+  PlLanguageEngine in '..\..\src\PlLanguageEngine.pas',
+  PlLanguageIniEngine in '..\..\src\PlLanguageIniEngine.pas',
+  PlLanguageTypes in '..\..\src\PlLanguageTypes.pas',
+  PlLanguageEncoder in '..\..\src\PlLanguageEncoder.pas',
+  PlLanguageJsonEngine in '..\..\src\PlLanguageJsonEngine.pas',
+  PlLanguageEngineFactory in '..\..\src\PlLanguageEngineFactory.pas';
+
+end.
