@@ -4,7 +4,7 @@
 
 ## Overview
 
-Pl Components is a collection of **open‑source Delphi components** designed to enhance VCL applications with practical, ready‑to‑use features.  
+Pl Components (Paolo's library: Components) is a collection of **open‑source Delphi components** designed to enhance VCL applications with practical, ready‑to‑use features.  
 The library focuses on **automation**, **customization**, and **persistence** of application behavior, while keeping every component **lightweight**, **non‑intrusive**, and **easy to integrate** into existing projects.
 
 The components are built and tested with **Delphi 12.1**, but they are designed to remain compatible with earlier and future Delphi versions whenever possible.  
