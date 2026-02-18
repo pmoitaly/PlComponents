@@ -314,12 +314,6 @@ List of property names that must never be translated.
 
 ---
 
-### `LanguageInfo: TPlLanguageInfo`
-
-Holds the language metadata used by the application (e.g. language name, code, author).
-
----
-
 ## Extending TPlLanguageEngine
 
 To implement a concrete persistence engine:
