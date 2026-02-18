@@ -127,8 +127,8 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Description>Pl Components new VCL components</DCC_Description>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
-        <VerInfo_Build>81</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components new VCL components;FileVersion=1.0.0.81;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.Vcl.Components;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Build>86</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components new VCL components;FileVersion=1.0.0.86;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.Vcl.Components;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=;PrivateBuild=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -140,8 +140,8 @@
         <VerInfo_Private>true</VerInfo_Private>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
-        <VerInfo_Build>94</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components new VCL components;FileVersion=1.0.0.94;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.Vcl.Components;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Build>99</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components new VCL components;FileVersion=1.0.0.99;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.Vcl.Components;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=;PrivateBuild=</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

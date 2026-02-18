@@ -49,6 +49,9 @@ contains
   PlLanguageTypes in '..\..\src\PlLanguageTypes.pas',
   PlLanguageEncoder in '..\..\src\PlLanguageEncoder.pas',
   PlLanguageJsonEngine in '..\..\src\PlLanguageJsonEngine.pas',
-  PlLanguageEngineFactory in '..\..\src\PlLanguageEngineFactory.pas';
+  PlLanguageEngineFactory in '..\..\src\PlLanguageEngineFactory.pas',
+  PlTranslationStore in '..\..\src\PlTranslationStore.pas',
+  PlLanguageInfoIniLoader in '..\..\src\PlLanguageInfoIniLoader.pas',
+  PlLanguageInfoJsonLoader in '..\..\src\PlLanguageInfoJsonLoader.pas';
 
 end.

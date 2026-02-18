@@ -135,16 +135,16 @@
         <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.0;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.96;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.103;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
-        <VerInfo_Build>96</VerInfo_Build>
+        <VerInfo_Build>103</VerInfo_Build>
         <VerInfo_Private>false</VerInfo_Private>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
-        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.85;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.91;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Build>85</VerInfo_Build>
+        <VerInfo_Build>91</VerInfo_Build>
         <VerInfo_Private>false</VerInfo_Private>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -156,14 +156,14 @@
         <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.0;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Build>106</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.106;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>113</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.113;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Private>false</VerInfo_Private>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
-        <VerInfo_Build>76</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.76;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Build>83</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Paolo Morandotti;FileDescription=Pl Components - Non visual VCL components;FileVersion=1.0.0.83;InternalName=Athens;LegalCopyright=Paolo Morandotti 2023 - All Rights Reserved;LegalTrademarks=;OriginalFilename=;ProgramID=it.morandotti.Athens.VclNonVisualComponents;ProductName=Paolo&apos;s Library Components;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Private>false</VerInfo_Private>
     </PropertyGroup>
@@ -189,6 +189,9 @@
         <DCCReference Include="..\..\src\PlLanguageEncoder.pas"/>
         <DCCReference Include="..\..\src\PlLanguageJsonEngine.pas"/>
         <DCCReference Include="..\..\src\PlLanguageEngineFactory.pas"/>
+        <DCCReference Include="..\..\src\PlTranslationStore.pas"/>
+        <DCCReference Include="..\..\src\PlLanguageInfoIniLoader.pas"/>
+        <DCCReference Include="..\..\src\PlLanguageInfoJsonLoader.pas"/>
         <None Include="plc.Vcl.NonVisualComponents.md"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
@@ -231,9 +234,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Win64\plc_Vcl_NonVisualComponents.bpl" Configuration="Release" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Win64\plc.Vcl.NonVisualComponents.bpl" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win64">
-                        <RemoteName>plc_Vcl_NonVisualComponents.bpl</RemoteName>
+                        <RemoteName>plc.Vcl.NonVisualComponents.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
