@@ -28,7 +28,7 @@ unit PlLanguageInfoJsonLoader;
   /// Project: PlComponents
   /// Unit: PlLanguageInfoJsonLoader
   /// This unit contains:
-  /// - TPlLanguageInfoIniLoader: a class to load metadata
+  /// - TPlLanguageInfoJsonLoader: a class to load metadata
   ///   about the language of an application from a Json file.
  ************************************************************* }
 

@@ -215,7 +215,7 @@ type
 
   IPlLanguageEngine = interface
     ['{8D2956E0-3F54-4C3F-9459-58B9AA4C0189}']
-    {mothods}
+    {methods}
     procedure LoadLanguage(ASource: TComponent; const AFile: string;
       AStore: IPlTranslationStore = nil);
     function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;

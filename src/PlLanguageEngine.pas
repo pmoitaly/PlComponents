@@ -62,7 +62,6 @@ type
     FExcludeClasses: TStrings;
     FExcludeOnAction: Boolean;
     FExcludeProperties: TStrings;
-    FLanguageInfo: TPlLanguageInfo;
     FUntraslableClasses: TStrings;
     FUntraslableProperties: TStrings;
     function GetCreateIfMissing: Boolean;
@@ -177,9 +176,10 @@ type
     /// </summary>
     procedure LoadLanguage(ASource: TComponent; const AFile: string; AStore:
         IPlTranslationStore = nil); virtual;
-
-    function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;
-
+    /// <summary>
+    /// Read metadata about selected language.
+    /// </summary>
+   function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;
     /// <summary>
     /// Saves language data from the specified component container.
     /// </summary>
@@ -213,10 +213,6 @@ type
     /// </summary>
     property ExcludeProperties: TStrings read FExcludeProperties
       write SetExcludeProperties;
-    /// <summary>
-    /// A set of language property to be used by the application.
-    /// </summary>
-    property LanguageInfo: TPlLanguageInfo read FLanguageInfo write FLanguageInfo;
   end;
 
 implementation
@@ -378,8 +374,8 @@ begin
   LoadTranslation(ASource, AFile, AStore);
 end;
 
-function TPlLanguageEngine.ReadLanguageInfo(
-  const AFile: string): TPlLanguageInfo;
+function TPlLanguageEngine.ReadLanguageInfo(const AFile: string):
+    TPlLanguageInfo;
 begin
   Result := FLanguageInfoLoader.LoadFromFile(AFile);
 end;
