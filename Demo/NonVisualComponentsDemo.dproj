@@ -4,7 +4,7 @@
         <ProjectVersion>20.1</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <ProjectName Condition="'$(ProjectName)'==''">NonVisualComponentsDemo</ProjectName>
         <TargetedPlatforms>3</TargetedPlatforms>
@@ -72,14 +72,17 @@
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>NonVisualComponentsDemo</SanitizedProjectName>
         <Custom_Styles>&quot;Aqua Light Slate|VCLSTYLE|$(BDSCOMMONDIR)\Styles\AquaLightSlate.vsf&quot;;Glow|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Glow.vsf;&quot;Windows11 MineShaft|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows11_MineShaft.vsf&quot;;&quot;Windows11 Modern Dark|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows11_Modern_Dark.vsf&quot;;&quot;Windows11 Modern Light|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows11_Modern_Light.vsf&quot;;&quot;Windows11 Polar Dark|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows11_Polar_Dark.vsf&quot;;&quot;Windows11 Polar Light|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows11_Polar_Light.vsf&quot;;&quot;Windows11 White Smoke|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows11_WhiteSmoke.vsf&quot;;Amakrits|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Amakrits.vsf;Emerald|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Emerald.vsf;&quot;Turquoise Gray|VCLSTYLE|$(BDSCOMMONDIR)\Styles\TurquoiseGray.vsf&quot;;Calypso|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Calypso.vsf;&quot;Calypso SE|VCLSTYLE|$(BDSCOMMONDIR)\Styles\CalypsoSE.vsf&quot;;&quot;Flat UI Light|VCLSTYLE|$(BDSCOMMONDIR)\Styles\FlatUILight.vsf&quot;;Stellar|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Stellar.vsf;&quot;Stellar Dark|VCLSTYLE|$(BDSCOMMONDIR)\Styles\StellarDark.vsf&quot;</Custom_Styles>
+        <DCC_UnitSearchPath>../src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <VerInfo_Locale>1040</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>FireDACIBDriver;vclwinx;fmx;vclie;DbxCommonDriver;bindengine;IndyIPCommon;VCLRESTComponents;FireDACCommonODBC;OpenOfficeComponent_install;Twitter;appanalytics;IndyProtocols;vclx;Skia.Package.RTL;MakerAI;dbxcds;vcledge;FmxTeeUI;RDGoogleAI;JvAppFrm;FireDACSqliteDriver;DbxClientDriver;JclVcl;soapmidas;TeeUI;plc.Vcl.VisualExtensions;Jcl;dbexpress;JvManagedThreads;Python;PowerPDFDR;inet;OnnxRTWrapper;PythonVcl;vcltouch;JvDB;fmxdae;SysToolsDR;JvCustom;CustomIPTransport;ZCore;JvSystem;ZParseSql;JvControls;RDOpenAI;JvCrypt;madExcept_;JvJans;JvMM;IndySystem;plc.Vcl.NonVisualComponents;JvGlobus;ibxbindings;OpenAIPackage;JclContainers;JvPageComps;vclFireDAC;madDisAsm_;FireDACCommon;DelphiAIDeveloper;DOSCommandDR;ZComponent;bindcompdbx;rtl;FireDACMySQLDriver;frce;DBXSqliteDriver;plc.Jvc.VisualExtensions;JvRuntimeDesign;JvXPCtrls;vclimg;inetdbxpress;FireDAC;JvDocking;JvDlgs;xmlrtl;P4DEnvironment;ibxpress;dsnap;JvCmp;vclib;fmxobj;bindcompvclsmp;SVGIconImageList;SVGIconImageListRestClient;FireDACCommonDriver;BrookTardigrade;IndyIPClient;bindcompvclwinx;bindcompfmx;SysToolsDBDR;madBasic_;JvBands;inetdb;ibmonitor;Tee;SVGIconImageListFMX;OrpheusDBDR;vclactnband;fmxFireDAC;DBXMySQLDriver;VclSmp;JvPascalInterpreter;fmxase;JvPluginSystem;JvTimeFramework;dbrtl;Skia.Package.FMX;CodeSiteExpressPkg;ComPortDrv;TeeDB;FireDACMSAccDriver;JclDeveloperTools;vcldsnap;DBXInterBaseDriver;JvWizards;PngComponentsD;OrpheusDR;Skia.Package.VCL;vcldb;SynEditDR;IconFontsImageList;JvCore;bindcomp;plc.Vcl.DB.DataCtrlsExtension;IndyCore;RESTBackendComponents;ZPlain;FireDACADSDriver;RESTComponents;IndyIPServer;vcl;dsnapxml;adortl;dsnapcon;JvDotNetCtrls;JvHMI;FireDACPgDriver;JvPrintPreview;tethering;JvStdCtrls;ZDbc;bindcompvcl;plc.Jvc.DB.DataCtrlsExtension;CloudService;BigNumbers;IconFontsImageListFMX;FMXTee;PythonFmx;plc.Jcv.NonVisualExtensions;soaprtl;soapserver;JvNet;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
@@ -87,8 +90,8 @@
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -106,11 +109,15 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
         <DCC_MapFile>3</DCC_MapFile>
+        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
+        <DCC_MapFile>3</DCC_MapFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -120,17 +127,19 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_DebugInformation>2</DCC_DebugInformation>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_DebugInformation>2</DCC_DebugInformation>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -160,9 +169,7 @@
                 <Source>
                     <Source Name="MainSource">NonVisualComponentsDemo.dpr</Source>
                 </Source>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\plc.SE.ComponentsD.bpl">(untitled)</Excluded_Packages>
-                </Excluded_Packages>
+                <Excluded_Packages/>
             </Delphi.Personality>
             <Deployment Version="4">
                 <DeployFile LocalName="Win32\Debug\NonVisualComponentsDemo.exe" Configuration="Debug" Class="ProjectOutput">

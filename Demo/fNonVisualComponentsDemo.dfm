@@ -451,6 +451,7 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
   object imlFlags: TImageList
     ColorDepth = cd16Bit
     Masked = False
+    Scaled = True
     Left = 716
     Top = 234
   end
