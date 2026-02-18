@@ -2,74 +2,202 @@
 
 ## Overview
 
-`TPlLineEncoder` is a utility record that provides a consistent way to **encode and decode strings**, generate **CRC32 keys**, and normalize values for persistence in INI files or text storage.  
-It is designed to support translation systems and configuration management by ensuring that special characters and multiline text are handled safely and predictably.
+`TPlLineEncoder` is a utility record that provides static helper functions for:
+
+* Encoding and decoding strings for persistence
+* Generating CRC32-based keys
+* Normalizing values for INI storage
+* Handling multiline text serialization
+* Escaping special characters in file paths and INI keys
+
+The record is completely stateless and exposes only `class function` members. It is designed to support language persistence engines and translation stores.
 
 ---
 
-## Features
+## Design Goals
 
-- Compute CRC32 checksums of strings (Unicode‑aware)  
-- Encode and decode special characters and line breaks  
-- Generate stable hexadecimal keys for string references  
-- Normalize and denormalize INI keys for safe persistence  
-- Join and restore multiline text using placeholders  
-- Normalize file paths by escaping backslashes  
-
----
-
-## Public Members
-
-| **Member**               | **Type**      | **Description**                                                                 |
-|---------------------------|---------------|---------------------------------------------------------------------------------|
-| **CRC32OfString**         | Function      | Computes the CRC32 checksum of a string, considering both low and high bytes of UTF‑16 characters. |
-| **Decode**                | Function      | Decodes a string by replacing encoded tokens with their original characters (e.g. `[CRLF]` → line break). |
-| **Encode**                | Function      | Encodes a string by replacing special characters with tokens (e.g. line breaks → `[CRLF]`, section sign → `[§]`). |
-| **MakeKey**               | Function      | Generates an 8‑character hexadecimal key based on the CRC32 checksum of a string. |
-| **DenormalizeIniKey**     | Function      | Restores an INI key string by replacing encoded tokens with their original characters (e.g. `[EQUAL]` → `=`). |
-| **JoinMultiline**         | Function      | Joins multiline text into a single line by replacing line breaks with a placeholder (`~~`). |
-| **RestoreMultiline**      | Function      | Restores multiline text by replacing placeholders (`~~`) with actual line breaks. |
-| **NormalizeIniKey**       | Function      | Normalizes an INI key by escaping apostrophes and replacing semicolons and equals signs with tokens. |
-| **NomalizePath**          | Function      | Normalizes a file path by escaping backslashes. |
+* Deterministic key generation
+* Safe storage of multiline and special-character strings
+* INI-compatible normalization
+* Unicode-safe CRC calculation
+* Zero instance allocation (record with static methods)
 
 ---
 
-## Example Usage
+## Public API Reference
 
-```delphi
-var
-  Encoded, Decoded, Key: string;
-begin
-  Encoded := TPlLineEncoder.Encode('Hello§World' + sLineBreak + 'Line2');
-  // Encoded = 'Hello[§]World[CRLF]Line2'
+### `class function CRC32OfString(const S: string): Cardinal; static;`
 
-  Decoded := TPlLineEncoder.Decode(Encoded);
-  // Decoded = 'Hello§World' + LineBreak + 'Line2'
+Computes the CRC32 checksum of a string.
 
-  Key := TPlLineEncoder.MakeKey('Hello World');
-  // Key = CRC32-based hex string, e.g. '1A2B3C4D'
-end;
+### Behavior
+
+* Iterates through each UTF-16 character
+* Processes both low-byte and high-byte
+* Uses `CRC32Table` lookup
+* Applies standard CRC32 final XOR (`$FFFFFFFF`)
+
+### Notes
+
+* Fully Unicode-aware
+* Deterministic across platforms
+* Used as the base for key generation
+
+---
+
+### `class function MakeKey(const S: string): string; static;`
+
+Generates an 8-character hexadecimal key derived from the CRC32 checksum.
+
+### Behavior
+
+* Calls `CRC32OfString`
+* Converts result to uppercase hexadecimal
+* Pads to 8 characters
+
+### Example Output
+
+```
+A1B2C3D4
 ```
 
----
+### Usage
 
-## Limitations
-
-- Works only with string inputs; binary data must be converted to string first.  
-- Designed for INI persistence and translation systems; not a general‑purpose serializer.  
-- Path normalization is simplistic (escapes backslashes only).  
+Used to create compact, stable identifiers for translation entries.
 
 ---
 
-## Contributing
+### `class function Encode(const S: string): string; static;`
 
-Contributions are welcome. Possible improvements include:  
-- Adding support for JSON/XML safe encoding  
-- Extending path normalization for cross‑platform compatibility  
-- Providing configurable token sets for custom encoding schemes  
+Encodes a string by replacing special characters with tokens.
+
+### Replacements
+
+* `§` → `[§]`
+* CRLF (`#13#10`) → `[CRLF]`
+
+### Purpose
+
+Allows safe storage in text-based formats where special characters may break structure.
 
 ---
 
-## License
+### `class function Decode(const S: string): string; static;`
 
-Released under the MIT License. See the LICENSE file for details.
+Decodes previously encoded tokens back to their original characters.
+
+### Replacements
+
+* `[CRLF]` → line break
+* `[§]` → `§`
+
+### Purpose
+
+Restores original content after loading from persistence.
+
+---
+
+### `class function JoinMultiline(const S: string): string; static;`
+
+Converts multiline text into a single line.
+
+### Behavior
+
+* Replaces `sLineBreak` with `~~`
+
+### Purpose
+
+Useful when storing multiline values in formats that require single-line entries.
+
+---
+
+### `class function RestoreMultiline(const S: string): string; static;`
+
+Restores multiline formatting from placeholder tokens.
+
+### Behavior
+
+* Replaces `~~` with `sLineBreak`
+
+### Purpose
+
+Inverse operation of `JoinMultiline`.
+
+---
+
+### `class function NormalizeIniKey(const S: string): string; static;`
+
+Escapes special characters to make a string safe as an INI key.
+
+### Replacements
+
+* `'` → `''` (escaped apostrophe)
+* `;` → `[SEMICOLON]`
+* `=` → `[EQUAL]`
+
+### Purpose
+
+Prevents INI parsing errors caused by reserved characters.
+
+---
+
+### `class function DenormalizeIniKey(const S: string): string; static;`
+
+Restores a normalized INI key to its original form.
+
+### Replacements
+
+* `[EQUAL]` → `=`
+* `[SEMICOLON]` → `;`
+* `''` → `'`
+
+### Purpose
+
+Inverse operation of `NormalizeIniKey`.
+
+---
+
+### `class function NomalizePath(const S: string): string; static;`
+
+Normalizes a file path by escaping backslashes.
+
+### Behavior
+
+* `\` becomes `\\`
+
+### Purpose
+
+Ensures path strings remain valid when stored in text-based formats.
+
+---
+
+## Internal Dependencies
+
+* `CRC32Table` (from `PlLanguageTypes`)
+* `SysUtils` for string helpers and `IntToHex`
+
+---
+
+## Usage Context
+
+`TPlLineEncoder` is typically used by:
+
+* Language persistence engines
+* Translation stores
+* Runtime translation pipelines
+
+It ensures consistency between:
+
+* Stored translation entries
+* Runtime dictionary keys
+* Persisted INI/JSON/XML values
+
+---
+
+## Architectural Notes
+
+* Stateless design
+* Fully static API
+* No side effects
+* Safe for concurrent use
+

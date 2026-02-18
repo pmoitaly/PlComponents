@@ -245,3 +245,7 @@ The INI engines provide a stable, predictable, and backward-compatible
 solution for UI localization.
 
 ---
+
+## License
+
+Released under the **MIT License**.

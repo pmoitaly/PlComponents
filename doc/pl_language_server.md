@@ -2,269 +2,269 @@
 
 ## Overview
 
-`TPlLanguageServer` is a **centralized, static coordination service** for language management in Delphi VCL applications that adopt a **single active UI language** at runtime.
+`TPlLanguageServer` is a centralized, static language manager responsible for coordinating **global language state** across an application.
 
-It is part of the **PlComponents** localization system and is designed to *optionally* complement `TPlLanguage` components, not to replace them.
+It provides:
 
-The server exists to simplify **global language coherence**, **single-point language control**, and **runtime string translation**, while deliberately avoiding ownership of client logic or error policies.
+* A single source of truth for the current language and language folder
+* Automatic synchronization of all registered `TPlLanguage` clients
+* Runtime translation lookup via a shared dictionary
+* Global notifications when the language changes
 
----
-
-## Design Goals
-
-The server is intentionally designed to provide:
-
-1. **Global language coherence** across forms and data modules
-2. **A single point of access** for changing language and language folder
-3. **Runtime translation** of generic strings not bound to components
-
-At the same time, it explicitly avoids becoming a monolithic or intrusive controller.
+`TPlLanguageServer` is designed for applications that operate with **one active language at a time**.
 
 ---
 
-## Intended Usage Scenario
+## Architectural Role
 
-`TPlLanguageServer` is intended for applications with:
+`TPlLanguageServer` sits at the top of the localization stack:
 
-- A **monolingual UI at any given time**
-- Multiple forms or data modules using `TPlLanguage`
-- The need to change language globally with minimal wiring
+```
+Application
+ ├─ TPlLanguageServer   (global coordinator)
+ │   ├─ Runtime translation store
+ │   ├─ Language metadata
+ │   └─ Client synchronization
+ └─ TPlLanguage         (per-container language handler)
+     └─ TPlLanguageEngine (persistence)
+```
 
-Each `TPlLanguage` component:
-
-- Remains fully autonomous
-- Manages its own persistence engine
-- Handles its own errors and events
-
-Using the server is **optional**. Applications may use `TPlLanguage` components independently if desired.
+It is intentionally implemented as a **static class** (class variables + class methods).
 
 ---
 
-## Architecture
+## Responsibilities
 
-```
-TPlLanguageServer (static singleton)
-   |
-   +-- Registered TPlLanguage clients
-   |
-   +-- Runtime translation dictionary
-```
+`TPlLanguageServer` is responsible for:
 
-The server:
-
-- Stores the currently selected language and language folder
-- Synchronizes registered clients when those values change
-- Loads runtime translation files (e.g. `runtime.lng`)
+* Storing the active language identifier
+* Storing the root languages folder
+* Managing the persistence format
+* Loading global runtime translations
+* Loading language metadata (`TPlLanguageInfo`)
+* Synchronizing all registered clients
+* Providing a global `Translate` function
+* Emitting global language-change notifications
 
 ---
 
-## Public API
+## Lifecycle
 
-### Properties
+### `class constructor Create;`
 
-#### Language
+Automatically executed once.
 
-```pascal
-class property Language: string;
-```
-
-The currently active language identifier (e.g. `"en"`, `"it"`).
-
-Setting this property:
-
-- Updates the internal runtime translation dictionary
-- Synchronizes all registered clients
-- Triggers `OnLanguageChanged`
+* Creates the internal client list
+* Creates the shared translation store
 
 ---
 
-#### LanguagesFolder
+### `class destructor Destroy;`
 
-```pascal
-class property LanguagesFolder: string;
-```
+Automatically executed once at shutdown.
 
-Root folder containing language subdirectories.
-
-Example structure:
-
-```
-Languages\
-  English\
-  Italiano\
-```
-
-Changing this property has the same effects as changing `Language`.
+* Clears the client list in a thread-safe manner
+* Releases server resources
 
 ---
 
-#### OnLanguageChanged
+## Private / Internal Members
 
-```pascal
-class property OnLanguageChanged: TLanguageChangedEvent;
-```
+### `class function CanSync: Boolean;`
 
-Global notification event fired after language or folder changes.
+Determines whether the server is in a valid state to synchronize data.
 
-Intended for:
+### Conditions
 
-- Modules that are not `TPlLanguage` clients
-- UI refresh logic
-- Logging or diagnostics
+* `LanguagesFolder` is set and exists
+* `Language` is set
+* Language-specific subfolder exists
 
 ---
 
-## Public Methods
+### `class procedure EnsureEngine;`
 
-### RegisterClient
-
-```pascal
-class procedure RegisterClient(AClient: TPlLanguage);
-```
-
-Registers a `TPlLanguage` instance for synchronization.
-
-- Safe against duplicates
-- Immediately synchronizes the client if possible
+Lazily creates the persistence engine based on `FileFormat`.
 
 ---
 
-### UnregisterClient
+### `class procedure UpdateData;`
 
-```pascal
-class procedure UnregisterClient(AClient: TPlLanguage);
-```
+Central update pipeline invoked whenever:
+
+* `Language` changes
+* `LanguagesFolder` changes
+* `FileFormat` changes
+
+### Execution Order
+
+1. Import runtime translations
+2. Synchronize all clients
+3. Import language metadata
+4. Synchronize client metadata
+5. Fire `OnLanguageChanged` event
+
+---
+
+## Public Properties
+
+### `class property FileFormat: TPlLanguagePersistence`
+
+Defines the persistence format used for language files.
+
+Changing this property:
+
+* Clears the current engine
+* Clears runtime translations
+* Reloads all language data
+
+---
+
+### `class property Language: string`
+
+Identifier of the active language (e.g. `"en"`, `"it"`).
+
+Changing this property triggers a full synchronization cycle.
+
+---
+
+### `class property LanguagesFolder: string`
+
+Root folder containing language subfolders.
+
+Changing this property triggers a full synchronization cycle.
+
+---
+
+### `class property LanguageInfo: TPlLanguageInfo`
+
+Holds metadata associated with the active language.
+
+This property is updated automatically when language data is reloaded.
+
+---
+
+### `class property OnLanguageChanged: TLanguageChangedEvent`
+
+Global event fired after a language change has been fully applied.
+
+Useful for modules that are not `TPlLanguage` clients.
+
+---
+
+## Client Management
+
+### `class procedure RegisterClient(AClient: TPlLanguage);`
+
+Registers a `TPlLanguage` component to receive language updates.
+
+### Behavior
+
+* Ignores `nil` clients
+* Prevents duplicate registration
+* Immediately synchronizes the client if possible
+* Thread-safe
+
+---
+
+### `class procedure UnregisterClient(AClient: TPlLanguage);`
 
 Removes a previously registered client.
 
-Should be called in the client destructor.
+### Behavior
+
+* Safe against `nil`
+* Thread-safe
+* Should be called in the client destructor
 
 ---
 
-### TranslateString
+## Runtime Translation
 
-```pascal
-class function TranslateString(const AString: string): string;
+### `class function Translate(const AString: string): string;`
+
+Translates a string using the global runtime dictionary.
+
+### Behavior
+
+* Empty input returns empty string
+* Looks up the string in the global store
+* Returns the original string if no translation is found
+
+---
+
+## Synchronization Internals
+
+### Client Synchronization
+
+Each registered client receives:
+
+* `Language`
+* `LanguagesFolder`
+* `FileFormat`
+
+via `SynchronizeClient`.
+
+Clients are responsible for handling their own load/save events.
+
+---
+
+### Runtime Translation Import
+
+Runtime translations are loaded from:
+
+```
+<LanguagesFolder>/<Language>/global.<ext>
 ```
 
-Translates a generic runtime string using the current runtime dictionary.
+Where `<ext>` depends on `FileFormat`.
 
-- Uses normalized keys
-- Returns the original string if no translation is found
-- Never raises exceptions
-
-This method is intentionally *best-effort*.
+These translations are stored in a shared `IPlTranslationStore`.
 
 ---
 
-## Runtime Translation Files
+### Language Metadata Import
 
-The server optionally loads runtime translations from a file named:
+Language metadata is loaded from:
 
 ```
-runtime.<ext>
+<LanguagesFolder>/<Language>/lang.<ext>
 ```
 
-located at:
-
-```
-<LanguagesFolder>\<Language>\
-```
-
-Example:
-
-```
-Languages\English\runtime.lng
-```
-
-Currently supported formats:
-
-- INI (`lpIni`, `lpIniFlat`)
-- JSON support planned
+and propagated to all registered clients.
 
 ---
 
-## Intentional Design Limits
+## Thread Safety
 
-The following limitations are **by design**, not omissions.
-
-### 1. The server is *not* a language engine
-
-- Does not inspect components
-- Does not serialize properties
-- Does not apply exclusions
-
-All translation logic remains inside `TPlLanguage` and its engines.
+* Client list access is protected via `TMonitor`
+* Translation store access is encapsulated
+* Engine creation is lazy and centralized
 
 ---
 
-### 2. The server does not manage client errors
+## Usage Guidelines
 
-- Does not intercept exceptions from clients
-- Does not apply error policies
+### When to Use
 
-Each `TPlLanguage` instance remains responsible for its own error handling.
+* Applications with a single active language
+* Centralized localization management
+* Mixed UI and non-UI translation needs
 
----
+### When *Not* to Use
 
-### 3. No support for simultaneous multiple UI languages
-
-The server maintains **a single global language state**.
-
-Applications requiring multiple concurrent UI languages must not use the server and should manage `TPlLanguage` instances independently.
+* Applications requiring multiple simultaneous languages
+* Per-module isolated localization contexts
 
 ---
 
-### 4. Synchronization is cooperative, not enforced
+## Design Characteristics
 
-Clients may:
-
-- Reject a language change
-- Fail independently
-- Use different persistence engines
-
-The server does not verify or enforce full alignment.
-
----
-
-### 5. Runtime translation is best-effort
-
-- Missing keys are silently ignored
-- The original string is returned
-
-This prevents runtime translation from breaking application flow.
-
----
-
-### 6. No UI refresh responsibility
-
-The server:
-
-- Signals language changes
-- Does not repaint or invalidate UI
-
-UI refresh logic belongs to the application.
-
----
-
-### 7. Thread safety without thread context
-
-- Internal structures are protected
-- No per-thread language context exists
-
-The server is thread-safe but intentionally global in scope.
-
----
-
-## When *Not* to Use TPlLanguageServer
-
-Do **not** use the server if:
-
-- Your application requires multiple languages simultaneously
-- You need per-form or per-module language isolation
-- You want centralized error handling across all clients
-
-In these cases, use `TPlLanguage` directly.
+* Static, centralized design
+* Event-driven synchronization
+* Engine-agnostic persistence
+* Deterministic update pipeline
+* Clear separation of concerns
 
 ---
 

@@ -301,3 +301,9 @@ It:
 
 It should be considered the **canonical example** for implementing custom language engines in PlComponents.
 
+---
+
+## License
+
+Released under the **MIT License**.
+

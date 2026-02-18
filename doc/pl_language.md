@@ -2,192 +2,306 @@
 
 ## Overview
 
-`TPlLanguage` is a VCL component designed to manage **runtime language localization** of Delphi applications.\
-It provides a structured, engine-based approach to loading and saving translations for forms and components, with support for multiple persistence formats.
+`TPlLanguage` is a visual component responsible for managing application localization at runtime.
 
-The component is part of the **PlComponents** library and is intended for applications that need:
+It acts as the **high-level façade** of the PlLanguage framework and coordinates:
 
-* Runtime language switching
-* Centralized translation management
-* Extensible persistence engines (INI, JSON, future XML, registry, etc.)
+* Language engine creation
+* Language file resolution
+* Load/Save operations
+* Runtime translation access
+* Event notifications
+* Integration with the language server
 
----
-
-## Key Features
-
-* Runtime loading and saving of translations
-* Pluggable persistence engines via `IPlLanguageEngine`
-* Automatic language file path and name calculation
-* Fine-grained exclusion of components and properties
-* Event hooks before and after load/save operations
-* Optional automatic file and directory creation
+Unlike [`TPlLanguageEngine`](pl_language_engine.md), which focuses on persistence mechanics, `TPlLanguage` manages the **application-facing workflow**.
 
 ---
 
-## Architecture
+## Class Hierarchy
 
-`TPlLanguage` acts as a **facade component** that delegates the actual translation logic to a persistence engine implementing `IPlLanguageEngine`.
-
+```text
+TComponent
+  └── TPlLanguage
 ```
-TPlLanguage
-   |
-   +--> IPlLanguageEngine (INI / JSON / ...)
-   |
-   +--> TPlLanguageServer (singleton coordinator)
-```
-
-The singleton server is intentionally used to coordinate multiple `TPlLanguage` instances within the same application.
 
 ---
 
-## Language File Structure
+## Responsibilities
 
-Language files are organized as:
+`TPlLanguage` is responsible for:
 
-```
-<LangPath>\<Language>\<ContainerName>.<ext>
-```
-
-Example:
-
-```
-Languages\English\MainForm.lng
-Languages\Italiano\MainForm.json
-Languages\Français\MainDatamodule.lng
-```
-
-Where:
-
-* `LangPath` is the root language directory
-* `Language` is the current language (e.g. English, Español, Italiano...)
-* `ContainerName` is usually the form or datamodule name
-* `<ext>` depends on `FileFormat`
+* Managing the selected language
+* Resolving file paths and names
+* Creating and configuring the appropriate persistence engine
+* Triggering load/save operations
+* Propagating configuration to the engine
+* Handling non-fatal language errors
+* Integrating with [`TPlLanguageServer`](pl_language_server.md)
+* Providing runtime string translation
 
 ---
 
-## Published Properties
+# Protected Members
 
-### Language Control
+## `procedure Loaded; override;`
 
-* **Language**
-  Current language identifier. Cannot be empty.
-
-* **LangPath**
-  Root directory containing all language subfolders.
-
-* **LangFile**
-  Full path of the active language file. Automatically calculated when possible.
-
-* **FileFormat**
-  Persistence format used by the engine (`lpIni`, `lpJson`, ...). At present only .ini and .json format are supported.
-
----
+Executed after the component has been fully loaded.
 
 ### Behavior
 
-* **CreateIfMissing**  
-  Automatically creates missing directories and/or language files.
-
-* **ExcludeOnAction**  
-  Skips properties bound to actions.
-
-* **ExcludeClasses**  
-  List of component class names to ignore during translation.
-
-* **ExcludeProperties**  
-  List of property names that should never be translated.
-
-* **RegisterOnStart**  
-  Controls whether the component automatically registers itself in
-  `TPlLanguageServer`.
-
-  * Default value: `True`
-  * Registration occurs **once**, during the component `Loaded` phase.
-  * Changing this property at runtime has **no effect**.
-
-  When `RegisterOnStart` is `True`, the component participates in
-  server-managed language synchronization (monolingual application model).
-
-  When `False`, the component operates in **standalone mode** and remains
-  fully independent from `TPlLanguageServer`.
-
+* Registers the component in `TPlLanguageServer` (if `RegisterOnStart` is `True`)
+* Ensures the engine is created
+* Synchronizes engine configuration
+* Automatically loads the language file (if available and not in design mode)
 
 ---
 
-### Events
+# Public Members
 
-* **BeforeLoad / AfterLoad**
-  Triggered before and after loading translations.
+## Constructor
 
-* **BeforeSave / AfterSave**
-  Triggered before and after saving translations.
+### `constructor Create(AOwner: TComponent); override;`
 
-* **OnLanguageError**
-  Optional notification hook for *language-related* errors (functional/domain errors).
-  System and programming exceptions are intentionally propagated.
-  OnLanguageError is a notification hook, not a global exception handler.
----
+Initializes the component.
 
-## Public Methods
+### Initialization Steps
 
-> **Error handling note**: only language-related (domain) errors trigger `OnLanguageError`. System or programming errors are not intercepted and will propagate normally.
-
-### LoadLanguage
-
-```pascal
-procedure LoadLanguage;
-procedure LoadLanguage(AContainer: TComponent);
-procedure LoadLanguage(AContainer: TComponent; AFile: string);
-```
-
-Loads translations into the specified container.
-Default values are Owner as AContainer and LangFile as AFile.
-
-* If the language engine is not ready, the call is ignored
-* Language-related errors trigger `OnLanguageError`
-* If EnsureReady is False, the procedure exits silently
-* If the engine is not instanced an exceeption is raised
-* If the BeforeLoad event sets allow to False, the call is ignored
+* Sets container to `AOwner`
+* Enables `RegisterOnStart`
+* Creates translation store
+* Initializes exclusion lists
+* Sets default persistence format (`lpIni`)
+* Creates the language engine
 
 ---
 
-### SaveLanguage
+## Destructor
 
-```pascal
-procedure SaveLanguage;
-procedure SaveLanguage(AContainer: TComponent);
-procedure SaveLanguage(AContainer: TComponent; AFile: string);
-```
+### `destructor Destroy; override;`
 
-Persists the current translations of the container.
-Default values are Owner as AContainer and LangFile as AFile.
+Cleans up resources.
 
-* If the engine is not ready, the call is ignored
-* Language-related errors trigger `OnLanguageError`
-* If EnsureReady is False, the procedure exits silently
-* If the engine is not instanced an exceeption is raised
-* If the BeforeSave event sets allow to False, the call is ignored
+### Behavior
+
+* Unregisters from `TPlLanguageServer`
+* Releases engine reference
+* Frees exclusion lists
 
 ---
 
-### Translate
+## `property LanguageInfo: TPlLanguageInfo`
 
-```pascal
-function Translate(const AString: string): string;
-```
-
-Translates a single string using the active language engine.
+Holds metadata associated with the current language.
 
 ---
 
-## Typical Usage
+## Load Operations
 
-```pascal
-PlLanguage1.LangPath := 'Languages';
-PlLanguage1.Language := 'en';
-PlLanguage1.FileFormat := lpIni;
-PlLanguage1.LoadLanguage;
-```
+### `procedure LoadLanguage; overload;`
+
+Loads language using the default container and current file.
+
+---
+
+### `procedure LoadLanguage(AContainer: TComponent); overload;`
+
+Loads language into the specified container using the current file.
+
+---
+
+### `procedure LoadLanguage(AContainer: TComponent; AFile: string); overload;`
+
+Loads language from a specific file.
+
+### Execution Flow
+
+1. Ensures engine is ready
+2. Fires `BeforeLoad` event
+3. Clears translation store
+4. Delegates to engine
+5. Handles `EPlLanguageException`
+6. Fires `AfterLoad` event
+
+---
+
+## Save Operations
+
+### `procedure SaveLanguage; overload;`
+
+Saves language using default container and file.
+
+---
+
+### `procedure SaveLanguage(AContainer: TComponent); overload;`
+
+Saves language from specified container using current file.
+
+---
+
+### `procedure SaveLanguage(AContainer: TComponent; AFile: string); overload;`
+
+Saves language to a specific file.
+
+### Execution Flow
+
+1. Validates file selection
+2. Ensures engine readiness
+3. Fires `BeforeSave` event
+4. Delegates to engine
+5. Handles `EPlLanguageException`
+6. Fires `AfterSave` event
+
+---
+
+## Runtime Translation
+
+### `function Translate(const AString: string): string;`
+
+Translates a runtime string.
+
+### Behavior
+
+* Checks internal translation store
+* Falls back to `TPlLanguageServer.Translate`
+* Returns original string if no translation is found
+
+---
+
+# Published Properties
+
+## Events
+
+### `AfterLoad: TPlAfterLoadLanguageEvent`
+
+Called after a language file has been loaded.
+
+### `AfterSave: TPlAfterSaveLanguageEvent`
+
+Called after a language file has been saved.
+
+### `BeforeLoad: TPlBeforeLoadLanguageEvent`
+
+Called before loading a language file. Allows cancellation.
+
+### `BeforeSave: TPlBeforeSaveLanguageEvent`
+
+Called before saving a language file. Allows cancellation.
+
+### `OnLanguageError: TPlOnLanguageError`
+
+Triggered when a non-fatal language error occurs.
+
+---
+
+## Configuration Properties
+
+### `CreateIfMissing: Boolean`
+
+If `True`, missing language files and directories are created automatically.
+
+---
+
+### `ExcludeClasses: TStrings`
+
+List of component classes excluded from translation.
+
+---
+
+### `ExcludeOnAction: Boolean`
+
+If `True`, components associated with Actions are excluded.
+
+---
+
+### `ExcludeProperties: TStrings`
+
+List of property names excluded from translation.
+
+---
+
+### `FileFormat: TPlLanguagePersistence`
+
+Defines the persistence format.
+
+Changing this property recreates the engine and optionally reloads the language.
+
+---
+
+### `LangFile: string`
+
+Full path to the active language file.
+
+Setting this property:
+
+* Updates `LangPath`
+* Updates `Language`
+* Automatically triggers loading (if not in design mode)
+
+---
+
+### `LangPath: string`
+
+Base path where language folders are stored.
+
+Changing this recalculates the language file.
+
+---
+
+### `Language: string`
+
+Identifier of the current language.
+
+* Cannot be empty
+* Recalculates file name when changed
+
+---
+
+### `RegisterOnStart: Boolean`
+
+If `True`, the component registers itself with `TPlLanguageServer` during loading.
+
+---
+
+# Internal Workflow Summary
+
+1. Component initializes and creates engine
+2. Language file path is calculated from:
+
+   * `LangPath`
+   * `Language`
+   * Owner container name
+   * Selected file format
+3. Engine performs persistence operations
+4. Translation store is populated
+5. Runtime `Translate` resolves values via store or server
+
+---
+
+# Error Handling Strategy
+
+* Fatal configuration errors raise `EPlLanguageException`
+* Non-fatal errors trigger `OnLanguageError`
+* Load/Save operations can be canceled via events
+
+---
+
+# Architectural Role
+
+`TPlLanguage` is the **application entry point** of the localization framework.
+
+It orchestrates:
+
+* Persistence engines
+* Translation storage
+* Metadata loading
+* Runtime translation server
+
+The design ensures:
+
+* Separation of concerns
+* Engine abstraction
+* Event-driven extensibility
+* Safe automatic loading
 
 ---
 
@@ -348,8 +462,6 @@ Always ensure that:
 
 ---
 
----
-
 ## Design Notes
 
 * `TPlLanguage` intentionally does **not** manage UI refresh logic.
@@ -363,7 +475,7 @@ Always ensure that:
 * XML persistence engine
 * Registry-based engine
 * Live language switching notifications
-* IDE-time language preview
+* Real-time translation via Web Services
 
 ---
 

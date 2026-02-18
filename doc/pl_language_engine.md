@@ -2,7 +2,16 @@
 
 ## Overview
 
-`TPlLanguageEngine` is the **abstract base class** for all persistence engines used by `TPlLanguage`.
+`TPlLanguageEngine` is the abstract base class for all persistence engines used by `TPlLanguage` in the *PlLanguage* framework. It provides the common infrastructure required to **load**, **save**, and **apply translations** to Delphi components using RTTI-based inspection.
+
+Concrete persistence engines (INI, JSON, XML, etc.) must inherit from this class and implement the persistence-specific logic by overriding abstract methods.
+
+A key design principle of `TPlLanguageEngine` is the **strict separation between**:
+
+* **Structural eligibility** of a property (`IsTranslatableProperty`)
+* **Contextual translation decision** (`ShouldTranslateProperty`)
+
+This separation allows safe extensibility and fine-grained control over translation behavior.
 
 It encapsulates the common logic required to:
 
@@ -15,29 +24,15 @@ The class is designed for **inheritance**, not for direct use.
 
 ---
 
-## Role in the Architecture
+## Responsibilities
 
-```
-TPlLanguage
-   |
-   +--> IPlLanguageEngine
-            |
-            +--> TPlLanguageEngine   (abstract base)
-                    |
-                    +--> TPlIniLanguageEngine
-                    +--> TPlJsonLanguageEngine
-                    +--> ...
-```
+`TPlLanguageEngine` is responsible for:
 
-`TPlLanguageEngine` provides:
-
-- A **stable contract** for all engines
-- Shared filtering and translation logic
-- A clear separation between *inspection*, *decision*, and *persistence*
-
-Concrete engines are responsible **only** for reading and writing data.
-
----
+* Discovering translatable components and properties via RTTI
+* Applying exclusion rules at class and property level
+* Managing runtime translation dictionaries
+* Delegating persistence to concrete subclasses
+* Handling automatic creation of missing language files
 
 ## Design Principles
 
@@ -60,52 +55,128 @@ Concrete engines are responsible **only** for reading and writing data.
 
 ---
 
-## Property Filtering Model
+## Class Hierarchy
 
-Translation is governed by **two distinct checks**.
+```text
+TInterfacedObject
+  └── TPlLanguageEngine
+```
 
-### 1. IsTranslatableProperty
+Implements:
 
-Structural check:
-
-- Property must be `published`
-- Property must be readable and writable
-- Property type must be string-compatible
-- Property name must not be excluded
-
-This check answers:
-
-> *“Can this property ever be translated?”*
+* `IPlLanguageEngine`
 
 ---
 
-### 2. ShouldTranslateProperty
+## Protected Fields
 
-Contextual check:
+### `FContext: TRTTIContext`
 
-- Evaluates the specific component instance
-- Applies runtime rules (e.g. `ExcludeOnAction`)
-
-This check answers:
-
-> *“Should this property be translated **now**, on this component?”*
+Shared RTTI context used during the engine lifetime for type and property inspection.
 
 ---
 
-### ExcludeOnAction Rule
+### `FFileStyle: TPlLanguagePersistence`
 
-When `ExcludeOnAction = True`:
-
-- If a component has an associated `Action`
-- Then text properties managed by the action (`Caption`, `Hint`) are **not translated**
-
-Rationale:
-
-> Actions are assumed to already contain localized text and must take precedence.
+Indicates the persistence format handled by the concrete engine (e.g. INI, JSON).
 
 ---
 
-## Lifecycle of LoadLanguage
+### `FLanguageInfoLoader: IPlLanguageInfoLoader`
+
+Loader responsible for reading persisted language metadata.
+
+---
+
+### `FTranslationsDict: TDictionary<string, string>`
+
+Internal dictionary used for runtime string translation. Keys are normalized strings, values are encoded translations.
+
+---
+
+## Protected Methods
+
+### `function CreateInfoLoader: IPlLanguageInfoLoader; virtual; abstract;`
+
+Creates and returns an instance of the language metadata loader.
+
+**Must be implemented by subclasses.**
+
+---
+
+### `function HasAction(ASource: TObject): Boolean;`
+
+Returns `True` if the specified object exposes an `Action` property and it is assigned.
+
+Used to determine whether translation should be suppressed when `ExcludeOnAction` is enabled.
+
+---
+
+### `function IsEligibleClass(AnElement: TPersistent): Boolean;`
+
+Determines whether a component instance is eligible for translation.
+
+Eligibility rules:
+
+* Must be a `TComponent`
+* Must have a non-empty `Name`
+* Must not be listed in internal or user-defined excluded classes
+
+---
+
+### `function IsTranslatableProperty(AProperty: TRttiProperty): Boolean;`
+
+Checks whether a property is *structurally* eligible for translation.
+
+A property is considered translatable if:
+
+* It is published
+* It is readable and writable
+* Its type is string-compatible
+* It is not part of the internal untranslatable property list
+
+This method does **not** consider runtime context or exclusion rules.
+
+---
+
+### `function ShouldTranslateProperty(AProperty: TRttiProperty; ASource: TObject): Boolean;`
+
+Determines whether a property should actually be translated in the current context.
+
+This method is evaluated **after** `IsTranslatableProperty` and applies higher-level rules:
+
+* User-defined excluded properties
+* Action-related suppression (`ExcludeOnAction`)
+* Reserved property names (e.g. `Name`)
+* Caption/Hint/Text precedence when Actions are present
+
+---
+
+### `function LanguageFileExists(ASource: TComponent; const AFile: string): Boolean;`
+
+Checks whether the language file exists.
+
+If `CreateIfMissing` is `True`:
+
+* Missing directories are created
+* Missing files are generated by calling `SaveLanguage`
+
+Returns `True` if the file exists or was successfully created.
+
+---
+
+### `procedure LoadTranslation(ASource: TComponent; const AFile: string; AStore: IPlTranslationStore = nil); virtual; abstract;`
+
+Loads translations from a persistence-specific file.
+
+**Must be implemented by subclasses.**
+
+Expected responsibilities:
+
+* Apply translated values to component properties
+* Populate the runtime translation dictionary
+
+### Lifecycle of LoadLanguage
 
 1. Verify language file existence
 2. Optionally create directories/files (`CreateIfMissing`)
@@ -116,7 +187,19 @@ The base class does **not** parse files directly.
 
 ---
 
-## Lifecycle of SaveLanguage
+### `procedure SaveTranslation(ASource: TComponent; const AFile: string); virtual; abstract;`
+
+Saves translations to a persistence-specific file.
+
+**Must be implemented by subclasses.**
+
+Expected responsibilities:
+
+* Inspect components via RTTI
+* Extract translatable properties
+* Persist translation data
+
+### Lifecycle of SaveLanguage
 
 1. Ensure target directory exists (optional)
 2. Inspect components and properties
@@ -129,60 +212,138 @@ Purpose:
 
 ---
 
-## Public API Summary
+### `procedure SetPropertyValue(AComponent: TComponent; const AProp, AValue: string);`
 
-### LoadLanguage
+Assigns a translated value to a component property using RTTI.
 
-```pascal
-procedure LoadLanguage(ASource: TComponent; const AFile: string);
-```
+Before assignment:
 
-- Loads translations from a persistence medium
-- Does nothing if the file does not exist and creation is disabled
+* Translation eligibility is verified
+* Multiline encoding is restored
 
 ---
 
-### SaveLanguage
+## Public Methods
 
-```pascal
-procedure SaveLanguage(ASource: TComponent; const AFile: string);
-```
+### `constructor Create; virtual;`
 
-- Saves current component strings
-- Can create missing directories/files
+Creates the language engine and initializes:
+
+* Default exclusion lists
+* Internal RTTI context
+* Translation dictionary
+* Language metadata loader
 
 ---
 
-### Translate
+### `destructor Destroy; override;`
 
-```pascal
-function Translate(const AString: string): string;
-```
+Releases all internal resources, including:
 
-- Translates a single runtime string
-- Uses normalized keys
-- Falls back to the original string
+* RTTI context
+* Translation dictionary
+* Exclusion lists
+
+---
+
+### `procedure LoadLanguage(ASource: TComponent; const AFile: string; AStore: IPlTranslationStore = nil); virtual;`
+
+Loads language data into the specified component container.
+
+Behavior:
+
+* Verifies file existence
+* Optionally creates missing files
+* Delegates loading to `LoadTranslation`
+
+---
+
+### `function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;`
+
+Reads language metadata from the specified file using the configured loader.
+
+---
+
+### `procedure SaveLanguage(ASource: TComponent; const AFile: string); virtual;`
+
+Saves language data from the specified component container.
+
+Behavior:
+
+* Ensures target directories exist (if enabled)
+* Delegates persistence to `SaveTranslation`
+
+---
+
+### `function Translate(const AString: string): string;`
+
+Translates a runtime string using the internal translation dictionary.
+
+Characteristics:
+
+* Keys are normalized before lookup
+* Multiline encoding is restored
+* If no translation is found, the original string is returned
+* Never raises exceptions
+
+---
+
+## Public Properties
+
+### `CreateIfMissing: Boolean`
+
+When `True`, missing language files and directories are created automatically during load and save operations.
+
+---
+
+### `ExcludeClasses: TStrings`
+
+List of component class names explicitly excluded from translation.
+
+---
+
+### `ExcludeOnAction: Boolean`
+
+When `True`, properties managed by Actions (`Caption`, `Hint`, `Text`) are not translated.
+
+---
+
+### `ExcludeProperties: TStrings`
+
+List of property names that must never be translated.
+
+---
+
+### `LanguageInfo: TPlLanguageInfo`
+
+Holds the language metadata used by the application (e.g. language name, code, author).
 
 ---
 
 ## Extending TPlLanguageEngine
 
-To implement a new engine, you must:
+To implement a concrete persistence engine:
 
 1. Inherit from `TPlLanguageEngine`
 2. Implement:
 
-```pascal
-procedure LoadTranslation(ASource: TComponent; const AFile: string); override;
-procedure SaveTranslation(ASource: TComponent; const AFile: string); override;
-```
+   * `CreateInfoLoader`
+   * `LoadTranslation`
+   * `SaveTranslation`
+3. Populate `FTranslationsDict` consistently with `TPlLineEncoder`
 
-You should **not**:
+This design ensures a consistent translation pipeline across all persistence formats.
 
-- Reimplement filtering logic
-- Access UI refresh logic
-- Change exception policies
+---
 
+## Design Notes
+
+* RTTI inspection is centralized and reused
+* Translation rules are layered and predictable
+* Runtime translation is decoupled from persistence
+* Safe defaults prevent accidental translation of sensitive properties
+
+---
 ---
 
 ## Intentional Limitations
@@ -237,4 +398,3 @@ Concrete engines remain focused, simple, and replaceable.
 ## License
 
 Released under the **MIT License**.
-
