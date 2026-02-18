@@ -38,7 +38,8 @@ interface
 
 uses
   System.Classes, System.Generics.Collections,
-  plLanguage, plLanguageTypes, plLanguageEncoder;
+  plLanguage, plLanguageTypes, plLanguageEncoder,
+  plLanguageEngineFactory, PlTranslationStore;
 
 type
 
@@ -59,26 +60,33 @@ type
   ///  - Change Language or LanguagesFolder to trigger automatic updates.
   ///  - Use Translate() for runtime string translations.
   ///  - Subscribe to OnLanguageChanged for global notifications.
+  ///  Warning:
   ///  - Don't use it if you use different languages in the same application.
   /// </remarks>
   TPlLanguageServer = class
   private
     class var FClients: TList<TPlLanguage>;
+    class var FEngine: IPlLanguageEngine;
+    class var FFileFormat: TPlLanguagePersistence;
     class var FLanguage: string;
     class var FLanguagesFolder: string;
-    class var FTranslationsDict: TDictionary<string, string>;
+    class var FLanguageInfo: TPlLanguageInfo;
     class var FOnLanguageChanged: TLanguageChangedEvent;
+    class var FStore: IPlTranslationStore;
     class function CanSync: Boolean; static;
-    class function FindRuntimeTranslation(out Persistence
-      : TPlLanguagePersistence; out AFileName: string): Boolean; static;
-    class procedure ImportFromIni(AFileName: string); static;
-    class procedure ImportRuntimeStrings; static;
-    class procedure SynchronizeClient(AClient: TPlLanguage); static;
-    class procedure SynchronizeClients; static;
     class procedure DoLanguageChanged; static;
+    class procedure EnsureEngine;
+    class function GetGlobalLangFile: string;
+    class function GetLanguageInfoFile: string; static;
+    class procedure ImportLanguageInfo; static;
+    class procedure ImportRuntimeStrings; static;
+    class procedure SetFileFormat(const Value: TPlLanguagePersistence); static;
     class procedure SetLanguage(const Value: string); static;
     class procedure SetLanguagesFolder(const Value: string); static;
-    class procedure UpdateClients; static;
+    class procedure SynchronizeClient(AClient: TPlLanguage); static;
+    class procedure SynchronizeClients; static;
+    class procedure SynchronizeClientsInfo; static;
+    class procedure UpdateData; static;
   public
     /// <summary>
     /// Initializes the server (called automatically once).
@@ -86,9 +94,32 @@ type
     class constructor Create;
 
     /// <summary>
-    /// Cleans up resources (called automatically once).
+    /// Cleans up server's resources (called automatically once).
     /// </summary>
     class destructor Destroy;
+
+    /// <summary>
+    /// Persistence format used for language files.
+    /// </summary>
+    class property FileFormat: TPlLanguagePersistence read FFileFormat
+      write SetFileFormat;
+
+    /// <summary>
+    /// The currently active language identifier (e.g. "en", "it").
+    /// </summary>
+    class property Language: string read FLanguage write SetLanguage;
+
+    /// <summary>
+    /// The folder where translation files are stored.
+    /// </summary>
+    class property LanguageInfo: TPlLanguageInfo read FLanguageInfo
+      write FLanguageInfo;
+
+    /// <summary>
+    /// The folder where translation files are stored.
+    /// </summary>
+    class property LanguagesFolder: string read FLanguagesFolder
+      write SetLanguagesFolder;
 
     /// <summary>
     /// Registers a client component to receive language updates.
@@ -105,18 +136,7 @@ type
     /// Translates a given string using the current dictionary.
     /// If not found, the original text is returned.
     /// </summary>
-    class function TranslateString(const AString: string): string; static;
-
-    /// <summary>
-    /// The currently active language identifier (e.g. "en", "it").
-    /// </summary>
-    class property Language: string read FLanguage write SetLanguage;
-
-    /// <summary>
-    /// The folder where translation files are stored.
-    /// </summary>
-    class property LanguagesFolder: string read FLanguagesFolder
-      write SetLanguagesFolder;
+    class function Translate(const AString: string): string; static;
 
     /// <summary>
     /// Global event triggered when the language changes.
@@ -129,14 +149,14 @@ type
 implementation
 
 uses
-  System.SysUtils, System.IniFiles;
+  System.SysUtils;
 
 {$REGION 'TPlLanguageServer'}
 
 class constructor TPlLanguageServer.Create;
 begin
   FClients := TList<TPlLanguage>.Create;
-  FTranslationsDict := TDictionary<string, string>.Create;
+  FStore := TPlTranslationStore.Create;
 end;
 
 class destructor TPlLanguageServer.Destroy;
@@ -144,7 +164,6 @@ begin
   TMonitor.Enter(FClients);
   try
     FClients.Clear;
-    FreeAndNil(FTranslationsDict);
   finally
     TMonitor.Exit(FClients);
   end;
@@ -158,81 +177,58 @@ begin
     (IncludeTrailingPathDelimiter(FLanguagesFolder) + FLanguage);
 end;
 
-class function TPlLanguageServer.FindRuntimeTranslation(out Persistence
-  : TPlLanguagePersistence; out AFileName: string): Boolean;
-var
-  basePath: string;
-  fileName: string;
-  persistenceType: TPlLanguagePersistence;
+class procedure TPlLanguageServer.DoLanguageChanged;
 begin
-  basePath := IncludeTrailingPathDelimiter(FLanguagesFolder) +
-    IncludeTrailingPathDelimiter(FLanguage) + RUNTIME_FILE_NAME;
+  if Assigned(FOnLanguageChanged) then
+    FOnLanguageChanged(FLanguage, FLanguagesFolder);
+end;
 
-  for persistenceType := Low(TPlLanguagePersistence)
-    to High(TPlLanguagePersistence) do
-    begin
-      fileName := basePath + FILE_EXT[persistenceType];
-      if FileExists(fileName) then
-        begin
-          Result := True;
-          Persistence := persistenceType;
-          AFileName := fileName;
-          Exit;
-        end;
-    end;
-  Result := False;
+class procedure TPlLanguageServer.EnsureEngine;
+begin
+  if not Assigned(FEngine) then
+    FEngine := TPlLanguageEngineFactory.CreateEngine(FFileFormat);
+end;
+
+class function TPlLanguageServer.GetGlobalLangFile: string;
+begin
+  Result := IncludeTrailingPathDelimiter(FLanguagesFolder) + FLanguage +
+    PathDelim + 'global' + FILE_EXT[FFileFormat];
+end;
+
+class function TPlLanguageServer.GetLanguageInfoFile: string;
+begin
+  Result := IncludeTrailingPathDelimiter(FLanguagesFolder) + FLanguage +
+    PathDelim + 'lang' + FILE_EXT[FFileFormat];
+end;
+
+class procedure TPlLanguageServer.ImportLanguageInfo;
+var
+  infoName: string;
+begin
+  infoName := GetLanguageInfoFile;
+  if FileExists(GetLanguageInfoFile) then
+    FLanguageInfo := FEngine.ReadLanguageInfo(infoName);
 end;
 
 class procedure TPlLanguageServer.ImportRuntimeStrings;
 var
   fileName: string;
-  Persistence: TPlLanguagePersistence;
 begin
   if not CanSync then
     Exit;
 
-  if FindRuntimeTranslation(Persistence, fileName) then
-    case Persistence of
-      lpIni, lpIniFlat:
-        ImportFromIni(fileName);
-      lpJson: { TODO: Implement JSON }
-        ;
-(*      lpPo: { TODO: Implement PO }
-        ;
-      lpPot: { TODO: Implement POT }
-        ;
-      lpXml: { TODO: Implement XML }
-        ;
-*)
+  fileName := GetGlobalLangFile;
+  if not FileExists(fileName) then
+    begin
+      FStore.Clear;
+      Exit;
     end;
-end;
 
-class procedure TPlLanguageServer.ImportFromIni(AFileName: string);
-var
-  keys: TStringList;
-  i: Integer;
-  iniFile: TMemIniFile;
-begin
-  TMonitor.Enter(FTranslationsDict);
-  try
-    FTranslationsDict.Clear;
-    iniFile := TMemIniFile.Create(AFileName);
-    try
-      keys := TStringList.Create;
-      try
-        iniFile.ReadSection('Strings', keys);
-        for i := 0 to keys.Count - 1 do
-          FTranslationsDict.AddOrSetValue(keys[i], iniFile.ReadString('Strings',
-            keys[i], ''));
-      finally
-        keys.Free;
-      end;
-    finally
-      iniFile.Free;
-    end;
-  finally
-    TMonitor.Exit(FTranslationsDict);
-  end;
+  EnsureEngine;
+  FStore.Clear;
+
+  // if ASource = nil then no UI traversal
+  FEngine.LoadLanguage(nil, fileName, FStore);
 end;
 
 class procedure TPlLanguageServer.RegisterClient(AClient: TPlLanguage);
@@ -253,17 +249,16 @@ begin
   end;
 end;
 
-class procedure TPlLanguageServer.UnregisterClient(AClient: TPlLanguage);
+class procedure TPlLanguageServer.SetFileFormat(const Value
+  : TPlLanguagePersistence);
 begin
-  if AClient = nil then
-    Exit;
-
-  TMonitor.Enter(FClients);
-  try
-    FClients.Remove(AClient);
-  finally
-    TMonitor.Exit(FClients);
-  end;
+  if Value <> FFileFormat then
+    begin
+      FFileFormat := Value;
+      FEngine := nil;
+      FStore.Clear;
+      UpdateData;
+    end;
 end;
 
 class procedure TPlLanguageServer.SetLanguage(const Value: string);
@@ -271,7 +266,7 @@ begin
   if Value <> FLanguage then
     begin
       FLanguage := Value;
-      UpdateClients;
+      UpdateData;
     end;
 end;
 
@@ -280,7 +275,7 @@ begin
   if Value <> FLanguagesFolder then
     begin
       FLanguagesFolder := Value;
-      UpdateClients;
+      UpdateData;
     end;
 end;
 
@@ -289,6 +284,7 @@ begin
   // Each client will handle BeforeChangeLanguage/AfterChangeLanguage internally.
   AClient.Language := FLanguage;
   AClient.LangPath := FLanguagesFolder;
+  AClient.FileFormat := FFileFormat;
 end;
 
 class procedure TPlLanguageServer.SynchronizeClients;
@@ -307,33 +303,52 @@ begin
     end;
 end;
 
-class procedure TPlLanguageServer.DoLanguageChanged;
+class procedure TPlLanguageServer.SynchronizeClientsInfo;
+var
+  client: TPlLanguage;
 begin
-  if Assigned(FOnLanguageChanged) then
-    FOnLanguageChanged(FLanguage, FLanguagesFolder);
+  if CanSync then
+    begin
+      TMonitor.Enter(FClients);
+      try
+        for client in FClients do
+          client.LanguageInfo := FLanguageInfo;
+      finally
+        TMonitor.Exit(FClients);
+      end;
+    end;
 end;
 
-class function TPlLanguageServer.TranslateString(const AString: string): string;
-var
-  normalizedString: string;
+class function TPlLanguageServer.Translate(const AString: string): string;
 begin
-  normalizedString := TPlLineEncoder.MakeKey(AString);
-  TMonitor.Enter(FTranslationsDict);
+  if AString = '' then
+    Exit('');
+
+  if FStore.TryGetValue(AString, Result) then
+    Exit;
+
+  Result := AString;
+end;
+
+class procedure TPlLanguageServer.UnregisterClient(AClient: TPlLanguage);
+begin
+  if AClient = nil then
+    Exit;
+
+  TMonitor.Enter(FClients);
   try
-    if FTranslationsDict.ContainsKey(normalizedString) then
-      Result := TPlLineEncoder.RestoreMultiline
-        (FTranslationsDict[normalizedString])
-    else
-      Result := AString; // fallback
+    FClients.Remove(AClient);
   finally
-    TMonitor.Exit(FTranslationsDict);
+    TMonitor.Exit(FClients);
   end;
 end;
 
-class procedure TPlLanguageServer.UpdateClients;
+class procedure TPlLanguageServer.UpdateData;
 begin
   ImportRuntimeStrings;
   SynchronizeClients;
+  ImportLanguageInfo;
+  SynchronizeClientsInfo;
   DoLanguageChanged;
 end;
 

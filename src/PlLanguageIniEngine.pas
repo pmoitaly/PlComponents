@@ -37,9 +37,10 @@ interface
 
 uses
   System.Classes, System.IniFiles,
-  PlLanguageTypes, PlLanguageEncoder, PlLanguageEngine;
+  PlLanguageTypes, PlLanguageEncoder, PlLanguageEngine, PlLanguageInfoIniLoader;
 
 type
+
   /// <summary>
   /// Base INI persistence engine for TPlLanguage.
   /// Implements common logic for hierarchical and flat INI formats.
@@ -49,17 +50,20 @@ type
     SECTION_NAME = 'UIElements';
   private
     procedure WriteComponentData(LangIni: TMemIniFile; AComponent: TComponent);
+    procedure LoadStringsSection(AIni: TMemIniFile;
+      AStore: IPlTranslationStore);
+    function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;
   protected
+    /// <summary>
+    /// Creates am instance of the mtadata loader.
+    /// </summary>
+    function CreateInfoLoader: IPlLanguageInfoLoader; override;
+
     /// <summary>
     /// Resolves a fully-qualified component name (Parent.Child.SubChild).
     /// </summary>
     function FindQualifiedComponent(Source: TComponent; const AName: string)
       : TComponent;
-
-    /// <summary>
-    /// Loads runtime translation strings into the internal dictionary.
-    /// </summary>
-    procedure LoadTranslationsToDict(ASource: TMemIniFile);
 
     /// <summary>
     /// Returns the qualified name of a component, walking up the Parent chain.
@@ -87,8 +91,10 @@ type
     /// <summary>
     /// Loads translations from an INI file and applies them to components.
     /// </summary>
-    procedure LoadTranslation(ASource: TComponent;
-      const AFile: string); override;
+    procedure LoadTranslation(ASource: TComponent; const AFile: string; AStore:
+        IPlTranslationStore = nil); override;
+
+    function LoadLanguageInfo(const AFile: string): TPlLanguageInfo; override;
 
     /// <summary>
     /// Saves translatable properties of components to an INI file.
@@ -122,6 +128,11 @@ uses
 
 {$REGION 'TPlLanguageCustomIniEngine'}
 
+function TPlLanguageCustomIniEngine.CreateInfoLoader: IPlLanguageInfoLoader;
+begin
+  Result := TPlLanguageInfoIniLoader.Create;
+end;
+
 function TPlLanguageCustomIniEngine.FindQualifiedComponent(Source: TComponent;
   const AName: string): TComponent;
 var
@@ -145,47 +156,75 @@ begin
   end;
 end;
 
-procedure TPlLanguageCustomIniEngine.LoadTranslation(ASource: TComponent;
-  const AFile: string);
+procedure TPlLanguageCustomIniEngine.LoadTranslation(
+  ASource: TComponent;
+  const AFile: string;
+  AStore: IPlTranslationStore
+);
 var
   i: Integer;
   ini: TMemIniFile;
   sections: TStringList;
 begin
-  ini := TMemIniFile.Create(AFile);
+  ini := TMemIniFile.Create(AFile, TEncoding.UTF8);
   try
     sections := TStringList.Create;
     try
       ini.ReadSections(sections);
+
       for i := 0 to sections.Count - 1 do
-        ReadSectionData(ini, ASource, sections[i]);
+      begin
+        if SameText(sections[i], 'strings') then
+        begin
+          if Assigned(AStore) then
+            LoadStringsSection(ini, AStore);
+        end
+        else if Assigned(ASource) then
+          ReadSectionData(ini, ASource, sections[i]);
+      end;
+
     finally
       sections.Free;
     end;
-
-    LoadTranslationsToDict(ini);
   finally
     ini.Free;
   end;
 end;
 
-procedure TPlLanguageCustomIniEngine.LoadTranslationsToDict
-  (ASource: TMemIniFile);
-var
-  i: Integer;
-  keys: TStringList;
+function TPlLanguageCustomIniEngine.ReadLanguageInfo(
+  const AFile:string): TPlLanguageInfo;
 begin
-  FTranslationsDict.Clear;
+
+end;
+
+procedure TPlLanguageCustomIniEngine.LoadStringsSection(
+  AIni: TMemIniFile;
+  AStore: IPlTranslationStore
+);
+var
+  keys: TStringList;
+  i: Integer;
+  key: string;
+  value: string;
+begin
   keys := TStringList.Create;
   try
-    ASource.ReadSection('Strings', keys);
+    AIni.ReadSection('strings', keys);
+
     for i := 0 to keys.Count - 1 do
-      FTranslationsDict.AddOrSetValue(keys[i], ASource.ReadString('Strings',
-        keys[i], ''));
+    begin
+      key := keys[i];
+      value := TPlLineEncoder.RestoreMultiline(
+        AIni.ReadString('strings', key, '')
+      );
+
+      AStore.AddOrSetEncoded(key, value);
+    end;
   finally
     keys.Free;
   end;
 end;
+
 
 function TPlLanguageCustomIniEngine.QualifiedName
   (AComponent: TComponent): string;
@@ -238,7 +277,7 @@ var
   i: Integer;
   ini: TMemIniFile;
 begin
-  ini := TMemIniFile.Create(AFile);
+  ini := TMemIniFile.Create(AFile, TEncoding.UTF8);
   try
     for i := ASource.ComponentCount - 1 downto 0 do
       WriteComponentData(ini, ASource.Components[i]);

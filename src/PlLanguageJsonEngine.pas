@@ -48,22 +48,24 @@ type
     /// <summary>
     /// Recursively applies JSON translations to a component or object instance.
     /// </summary>
-    procedure TranslateObject(AJson: TJSONObject; ATarget: TObject);
+    procedure TranslateObject(AJson: TJSONObject; ATarget: TObject; AStore:
+        IPlTranslationStore = nil);
+    procedure LoadStringsSection(ASource: TJSONObject;
+      AStore: IPlTranslationStore);
   protected
     /// <summary>
     /// Serializes a component and its subcomponents into a JSON structure.
     /// </summary>
     procedure ComponentToJson(ASource: TComponent; AStructure: TJSONObject);
-
+    /// <summary>
+    /// Creates am instance of the mtadata loader.
+    /// </summary>
+    function CreateInfoLoader: IPlLanguageInfoLoader; override;
     /// <summary>
     /// Recursively serializes an object into a JSON object using RTTI.
     /// </summary>
     procedure SerializeObject(ASource: TObject; AJson: TJSONObject);
 
-    /// <summary>
-    /// Loads runtime translation strings into the internal dictionary.
-    /// </summary>
-    procedure LoadTranslationsToDict(ASource: TJSONObject);
   public
     /// <summary>
     /// Creates the JSON language engine.
@@ -74,7 +76,7 @@ type
     /// Loads translations from a JSON language file and applies them to components.
     /// </summary>
     procedure LoadTranslation(ASource: TComponent;
-      const AFile: string); override;
+      const AFile: string; AStore: IPlTranslationStore = nil); override;
 
     /// <summary>
     /// Saves translatable properties of components to a JSON language file.
@@ -88,7 +90,7 @@ implementation
 uses
   System.SysUtils, System.IOUtils, System.TypInfo,
   Vcl.Graphics,
-  PlLanguageEngineFactory;
+  PlLanguageEngineFactory, PlLanguageInfoJsonLoader;
 
 {$REGION 'TPlLanguageJsonEngine'}
 
@@ -118,6 +120,11 @@ begin
   for i := 0 to ASource.ComponentCount - 1 do
     if ASource.Components[i].Name <> '' then
       ComponentToJson(ASource.Components[i], AStructure);
+end;
+
+function TPlLanguageJsonEngine.CreateInfoLoader: IPlLanguageInfoLoader;
+begin
+  Result := TPlLanguageInfoJsonLoader.Create;
 end;
 
 procedure TPlLanguageJsonEngine.SerializeObject(ASource: TObject;
@@ -180,39 +187,45 @@ begin
     end;
 end;
 
-procedure TPlLanguageJsonEngine.LoadTranslation(ASource: TComponent;
-  const AFile: string);
+procedure TPlLanguageJsonEngine.LoadStringsSection(
+  ASource: TJSONObject;
+  AStore: IPlTranslationStore);
+var
+  jStrings: TJSONObject;
+  jPair: TJSONPair;
+begin
+  jStrings := ASource.Values['Strings'] as TJSONObject;
+  if not Assigned(jStrings) then
+    Exit;
+
+  for jPair in jStrings do
+    AStore.AddOrSet(jPair.JSONString.Value, jPair.JSONValue.Value);
+end;
+
+
+procedure TPlLanguageJsonEngine.LoadTranslation(
+  ASource: TComponent;
+  const AFile: string;
+  AStore: IPlTranslationStore = nil);
 var
   jsonString: string;
   jsonRoot: TJSONObject;
 begin
-  jsonString := TFile.ReadAllText(AFile);
+  if not Assigned(AStore) then
+    Exit;
+
+  jsonString := TFile.ReadAllText(AFile, TEncoding.UTF8);
   jsonRoot := TJSONObject.ParseJSONValue(jsonString) as TJSONObject;
   try
-    LoadTranslationsToDict(jsonRoot);
-    TranslateObject(jsonRoot, ASource);
+    LoadStringsSection(jsonRoot, AStore);
+    TranslateObject(jsonRoot, ASource, AStore);
   finally
     jsonRoot.Free;
   end;
 end;
 
-procedure TPlLanguageJsonEngine.LoadTranslationsToDict(ASource: TJSONObject);
-var
-  jStrings: TJSONValue;
-  jPair: TJSONPair;
-begin
-  jStrings := ASource.Values['Strings'];
-  if not Assigned(jStrings) or not (jStrings is TJSONObject) then
-    Exit;
-
-  FTranslationsDict.Clear;
-  for jPair in TJSONObject(jStrings) do
-    FTranslationsDict.AddOrSetValue(jPair.JSONString.Value,
-      jPair.JSONValue.Value);
-end;
-
 procedure TPlLanguageJsonEngine.TranslateObject(AJson: TJSONObject;
-  ATarget: TObject);
+  ATarget: TObject; AStore: IPlTranslationStore = nil);
 var
   jPair: TJSONPair;
   rType: TRttiType;
@@ -220,48 +233,73 @@ var
   subObject: TObject;
   subJson: TJSONObject;
   subValue: TJSONValue;
+  translatedValue: string;
 begin
-  if not Assigned(ATarget) then
+  if not Assigned(AJson) or not Assigned(ATarget) then
+    Exit;
+
+  // Centralized eligibility check
+  if (ATarget is TPersistent) and
+     not IsEligibleClass(TPersistent(ATarget)) then
     Exit;
 
   rType := FContext.GetType(ATarget.ClassType);
+  if not Assigned(rType) then
+    Exit;
 
   for jPair in AJson do
+  begin
+    rProperty := rType.GetProperty(jPair.JSONString.Value);
+    if not Assigned(rProperty) then
+      Continue;
+
+    // Absolute exclusions handled by base engine
+    if not IsTranslatableProperty(rProperty) then
+      Continue;
+
+    // TStrings special handling
+    if rProperty.PropertyType.IsInstance and
+       (rProperty.PropertyType.Handle = TypeInfo(TStrings)) then
     begin
-      rProperty := rType.GetProperty(jPair.JSONString.Value);
-      if not Assigned(rProperty) then
+      if not ShouldTranslateProperty(rProperty, ATarget) then
         Continue;
 
-      if rProperty.PropertyType.Handle = TypeInfo(TFont) then
+      if not (jPair.JSONValue is TJSONObject) then
         Continue;
 
-      // TStrings handling
-      if rProperty.PropertyType.IsInstance and
-        (rProperty.PropertyType.Handle = TypeInfo(TStrings)) then
-        begin
-          subJson := jPair.JSONValue as TJSONObject;
-          subValue := subJson.Values['Text'];
-          if Assigned(subValue) then
-            TStrings(rProperty.GetValue(ATarget).AsObject).Text :=
-              StringReplace(subValue.Value, '§', sLineBreak,
-                [rfReplaceAll]);
-          Continue;
-        end;
+      subJson := TJSONObject(jPair.JSONValue);
+      subValue := subJson.Values['Text'];
+      if Assigned(subValue) then
+      begin
+        translatedValue :=
+          StringReplace(subValue.Value, '§', sLineBreak, [rfReplaceAll]);
 
-      // Plain string or eligible property
-      if ShouldTranslateProperty(rProperty, ATarget) then
-        begin
-          rProperty.SetValue(ATarget,
-            TPlLineEncoder.RestoreMultiline(jPair.JSONValue.Value));
-        end
-      // Nested object
-      else if rProperty.PropertyType.IsInstance then
-        begin
-          subObject := rProperty.GetValue(ATarget).AsObject;
-          if Assigned(subObject) and (jPair.JSONValue is TJSONObject) then
-            TranslateObject(TJSONObject(jPair.JSONValue), subObject);
-        end;
+        TStrings(rProperty.GetValue(ATarget).AsObject).Text :=
+          translatedValue;
+      end;
+
+      Continue;
     end;
+
+    // Plain string property
+    if ShouldTranslateProperty(rProperty, ATarget) then
+    begin
+      translatedValue :=
+        TPlLineEncoder.RestoreMultiline(jPair.JSONValue.Value);
+
+      rProperty.SetValue(ATarget, translatedValue);
+      Continue;
+    end;
+
+    // Nested object
+    if rProperty.PropertyType.IsInstance and
+       (jPair.JSONValue is TJSONObject) then
+    begin
+      subObject := rProperty.GetValue(ATarget).AsObject;
+      if Assigned(subObject) then
+        TranslateObject(TJSONObject(jPair.JSONValue), subObject);
+    end;
+  end;
 end;
 
 procedure TPlLanguageJsonEngine.SaveTranslation(ASource: TComponent;

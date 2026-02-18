@@ -37,7 +37,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages,
   System.Classes, System.SysUtils,
-  PlLanguageTypes;
+  PlLanguageTypes, PlLanguageEncoder, PlTranslationStore;
 
 type
 
@@ -57,8 +57,10 @@ type
     FLangFile: string;
     FLangPath: string;
     FLanguage: string;
+    FLanguageInfo: TPlLanguageInfo;
     FOnLanguageError: TPlOnLanguageError;
     FRegisterOnStart: Boolean;
+    FStore: IPlTranslationStore;
 
     procedure CalculateLangFile;
     procedure CreateEngine;
@@ -80,6 +82,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
+    property LanguageInfo: TPlLanguageInfo read FLanguageInfo write FLanguageInfo;
 
     procedure LoadLanguage; overload;
     procedure LoadLanguage(AContainer: TComponent); overload;
@@ -150,6 +154,8 @@ begin
 
   FContainer := AOwner;
   FRegisterOnStart := True;
+  FStore := TPlTranslationStore.Create;
+
   FExcludeClasses := TStringList.Create(dupIgnore, True, False);
 //  FExcludeClasses.Add('TPlLanguage');
 //  FExcludeClasses.Add('TPlMenuFromFolder');
@@ -206,6 +212,8 @@ begin
     FEngine := TPlLanguageEngineFactory.CreateEngine(FFileFormat);
     FEngine.CreateIfMissing := FCreateIfMissing;
     FEngine.ExcludeOnAction := FExcludeOnAction;
+    FEngine.ExcludeClasses.Assign(FExcludeClasses);
+    FEngine.ExcludeProperties.Assign(FExcludeProperties);
   except
     FEngine := nil;
   end;
@@ -214,7 +222,7 @@ end;
 function TPlLanguage.EnsureReady: Boolean;
 begin
   if not Assigned(FEngine) then
-    FEngine := TPlLanguageEngineFactory.CreateEngine(FFileFormat);
+    CreateEngine;
 
   Result := Assigned(FEngine) and (FLangFile <> '');
 end;
@@ -280,8 +288,10 @@ begin
   if not allow then
     Exit;
 
+
   try
-    FEngine.LoadLanguage(AContainer, AFile);
+    FStore.Clear;
+    FEngine.LoadLanguage(AContainer, AFile, FStore);
   except
     on e: EPlLanguageException do
       begin
@@ -387,7 +397,7 @@ begin
     begin
       FLangFile := Value;
       FLangPath := ReadLangPathFromFileName(Value);
-      FLanguage := ChangeFileExt(ExtractFileName(Value), '');
+      FLanguage := ExtractFileName(ExcludeTrailingPathDelimiter(ExtractFileDir(Value)));
       if not (csLoading in ComponentState) then
         LoadLanguage;
     end;
@@ -434,10 +444,10 @@ end;
 
 function TPlLanguage.Translate(const AString: string): string;
 begin
-  if Assigned(FEngine) then
-    Result := FEngine.Translate(AString)
-  else
-    raise EPlLanguageException.Create(SNoLanguageEngineSelected);
+  if FStore.TryGetValue(AString, Result) then
+    Exit;
+
+  Result := TPlLanguageServer.Translate(AString);
 end;
 
 {$ENDREGION}

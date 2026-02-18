@@ -36,7 +36,7 @@ interface
 
 uses
   System.Classes, System.RTTI, System.TypInfo, System.Generics.Collections,
-  PlLanguageTypes, plLanguageEncoder;
+  PlLanguageTypes, plLanguageEncoder, PlTranslationStore;
 
 type
 
@@ -62,6 +62,9 @@ type
     FExcludeClasses: TStrings;
     FExcludeOnAction: Boolean;
     FExcludeProperties: TStrings;
+    FLanguageInfo: TPlLanguageInfo;
+    FUntraslableClasses: TStrings;
+    FUntraslableProperties: TStrings;
     function GetCreateIfMissing: Boolean;
     function GetExcludeClasses: TStrings;
     function GetExcludeOnAction: Boolean;
@@ -80,9 +83,17 @@ type
     /// </summary>
     FFileStyle: TPlLanguagePersistence;
     /// <summary>
+    /// Loader of persistend metadata about the language.
+    /// </summary>
+    FLanguageInfoLoader: IPlLanguageInfoLoader;
+    /// <summary>
     /// Internal dictionary used for runtime string translation.
     /// </summary>
     FTranslationsDict: TDictionary<string, string>;
+    /// <summary>
+    /// Creates am instance of the mtadata loader.
+    /// </summary>
+    function CreateInfoLoader: IPlLanguageInfoLoader; virtual; abstract;
     /// <summary>
     /// Returns True if the source object is associated with an Action.
     /// </summary>
@@ -123,8 +134,8 @@ type
     /// This method must be implemented by concrete engines.
     /// It should populate component properties and runtime dictionaries.
     /// </remarks>
-    procedure LoadTranslation(ASource: TComponent; const AFile: string);
-      virtual; abstract;
+    procedure LoadTranslation(ASource: TComponent; const AFile: string;
+      AStore: IPlTranslationStore = nil); virtual; abstract;
     /// <summary>
     /// Saves translations to a persistence-specific file.
     /// </summary>
@@ -164,7 +175,11 @@ type
     /// <summary>
     /// Loads language data into the specified component container.
     /// </summary>
-    procedure LoadLanguage(ASource: TComponent; const AFile: string); virtual;
+    procedure LoadLanguage(ASource: TComponent; const AFile: string; AStore:
+        IPlTranslationStore = nil); virtual;
+
+    function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;
+
     /// <summary>
     /// Saves language data from the specified component container.
     /// </summary>
@@ -198,6 +213,10 @@ type
     /// </summary>
     property ExcludeProperties: TStrings read FExcludeProperties
       write SetExcludeProperties;
+    /// <summary>
+    /// A set of language property to be used by the application.
+    /// </summary>
+    property LanguageInfo: TPlLanguageInfo read FLanguageInfo write FLanguageInfo;
   end;
 
 implementation
@@ -213,24 +232,58 @@ begin
   inherited;
 
   FExcludeProperties := TStringList.Create(dupIgnore, True, False);
-//  FExcludeProperties.Add('Category');
-//  FExcludeProperties.Add('HelpFile');
-//  FExcludeProperties.Add('HelpKeyword');
-//  FExcludeProperties.Add('ImageName');
-//  FExcludeProperties.Add('ImeName');
-//  FExcludeProperties.Add('Name');
-//  FExcludeProperties.Add('DefaultDir');
-//  FExcludeProperties.Add('FileName');
-//  FExcludeProperties.Add('LangFile');
-//  FExcludeProperties.Add('LangPath');
-//  FExcludeProperties.Add('Language');
-//  FExcludeProperties.Add('StyleName');
+  FUntraslableProperties := TStringList.Create(dupIgnore, True, False);
+  FUntraslableProperties.Add('Category');
+  FUntraslableProperties.Add('DataField');
+  FUntraslableProperties.Add('DataKey');
+  FUntraslableProperties.Add('DefaultDir');
+  FUntraslableProperties.Add('DefaultExt');
+  FUntraslableProperties.Add('FileName');
+  FUntraslableProperties.Add('FindText');
+  FUntraslableProperties.Add('Font');
+  FUntraslableProperties.Add('HelpFile');
+  FUntraslableProperties.Add('HelpKeyword');
+  FUntraslableProperties.Add('ImageName');
+  FUntraslableProperties.Add('ImeName');
+  FUntraslableProperties.Add('InitialDir');
+  FUntraslableProperties.Add('LangFile');
+  FUntraslableProperties.Add('LangPath');
+  FUntraslableProperties.Add('Language');
+  FUntraslableProperties.Add('LookupField');
+  FUntraslableProperties.Add('Name');
+  FUntraslableProperties.Add('Password');
+  FUntraslableProperties.Add('StyleName');
+  FUntraslableProperties.Add('UserName');
 
   FExcludeClasses := TStringList.Create(dupIgnore, True, False);
-//  FExcludeClasses.Add(Self.ClassName);
+  FUntraslableClasses := TStringList.Create(dupIgnore, True, False);
+  FUntraslableClasses.Add('TPlLanguage');
+  FUntraslableClasses.Add('TBindSourceDB');
+  FUntraslableClasses.Add('TBindSourceDBX');
+  FUntraslableClasses.Add('TParamsAdapter');
+  FUntraslableClasses.Add('TPrototypeBindSource');
+  FUntraslableClasses.Add('TNetHttpClient');
+  FUntraslableClasses.Add('TNetHttpRequest');
+  FUntraslableClasses.Add('TRESTClient');
+  FUntraslableClasses.Add('TRESTRequest');
+  FUntraslableClasses.Add('TRESTResponse');
+  FUntraslableClasses.Add('TRESTRequestDataSetAdapter');
+  FUntraslableClasses.Add('TRESTResponseDataSetAdapter');
+  FUntraslableClasses.Add('TSimpleAuthenticator');
+  FUntraslableClasses.Add('THTTPBasicAuthenticator');
+  FUntraslableClasses.Add('TOAuth1Authenticator');
+  FUntraslableClasses.Add('TOAuth2Authenticator');
+  FUntraslableClasses.Add('TClientDataSet');
+  FUntraslableClasses.Add('TImageList');
+  FUntraslableClasses.Add('TJumpList');
+  FUntraslableClasses.Add('TXMLTrasform');
+  FUntraslableClasses.Add('TXMLTrasformClient');
+  FUntraslableClasses.Add('TXMLTrasformProvider');
 
   FTranslationsDict := TDictionary<string, string>.Create;
   FContext := TRTTIContext.Create;
+
+  FLanguageInfoLoader := CreateInfoLoader;
 end;
 
 destructor TPlLanguageEngine.Destroy;
@@ -238,6 +291,8 @@ begin
   FTranslationsDict.Free;
   FExcludeClasses.Free;
   FExcludeProperties.Free;
+  FUntraslableProperties.Free;
+  FUntraslableClasses.Free;
   FContext.Free;
   inherited;
 end;
@@ -247,10 +302,12 @@ function TPlLanguageEngine.IsTranslatableProperty
 const
   STRING_TYPE = [tkUString, tkWString, tkLString, tkString];
 begin
-  Result := Assigned(AProperty) and AProperty.IsReadable and
-    AProperty.IsWritable and (AProperty.Visibility = mvPublished) and
-    (AProperty.PropertyType.TypeKind in STRING_TYPE) and
-    (AProperty.Name <> 'Name');
+  Result := Assigned(AProperty)
+    and AProperty.IsReadable
+    and AProperty.IsWritable
+    and (AProperty.Visibility = mvPublished)
+    and (AProperty.PropertyType.TypeKind in STRING_TYPE)
+    and (FUntraslableProperties.IndexOf(AProperty.Name) = -1);
 end;
 
 function TPlLanguageEngine.ShouldTranslateProperty(AProperty: TRttiProperty;
@@ -263,12 +320,17 @@ begin
     (FExcludeProperties.IndexOf(propertyName) = -1)  and
     (propertyName <> 'Name') and
     not(FExcludeOnAction and HasAction(ASource) and
-    ((propertyName = 'Caption') or (propertyName = 'Hint')));
+    ((propertyName = 'Caption') or (propertyName = 'Hint')
+      or (propertyName = 'Text')));
 end;
 
 function TPlLanguageEngine.IsEligibleClass(AnElement: TPersistent): Boolean;
 begin
-  Result := Assigned(AnElement) and
+  Result :=
+    Assigned(AnElement) and
+    (AnElement is TComponent) and
+    (TComponent(AnElement).Name <> '') and
+    (FUntraslableClasses.IndexOf(AnElement.ClassName) = -1) and
     (FExcludeClasses.IndexOf(AnElement.ClassName) = -1);
 end;
 
@@ -308,12 +370,18 @@ begin
 end;
 
 procedure TPlLanguageEngine.LoadLanguage(ASource: TComponent;
-  const AFile: string);
+  const AFile: string;
+  AStore: IPlTranslationStore = nil);
 begin
   if not LanguageFileExists(ASource, AFile) then
     Exit;
+  LoadTranslation(ASource, AFile, AStore);
+end;
 
-  LoadTranslation(ASource, AFile);
+function TPlLanguageEngine.ReadLanguageInfo(
+  const AFile: string): TPlLanguageInfo;
+begin
+  Result := FLanguageInfoLoader.LoadFromFile(AFile);
 end;
 
 procedure TPlLanguageEngine.SaveLanguage(ASource: TComponent;
