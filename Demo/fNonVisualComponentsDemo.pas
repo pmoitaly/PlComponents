@@ -32,7 +32,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls,
   Vcl.ComCtrls, Vcl.FileCtrl, Vcl.Grids, Vcl.Outline, Vcl.ExtCtrls,
   Vcl.Samples.DirOutln,
-  PlRunTimeDesigner, PlStyleMenuManager, PlMenuFromFolder,
+  PlRunTimeDesigner, PlStyleMenuManager, PlMenuFromFolder, PlLanguageServer,
   PlRecentFilesComponent, PlLockWndManager, PlLanguage, System.ImageList,
   Vcl.ImgList;
 
@@ -45,6 +45,7 @@ type
     chkStylePreview: TCheckBox;
     douMenuFromFolder: TDirectoryOutline;
     flbRecent: TFileListBox;
+    imlFlags: TImageList;
     lblCursorPosition: TLabel;
     lblLastMenuItemSelectd: TLabel;
     lblPlLanguage: TLabel;
@@ -70,13 +71,18 @@ type
     mitFile: TMenuItem;
     mitFolder: TMenuItem;
     mitLanguage: TMenuItem;
+    mitOptions: TMenuItem;
     mitPurgeList: TMenuItem;
     mitRecentFiles: TMenuItem;
     mitStyle: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
+    N4: TMenuItem;
     pctMain: TPageControl;
+    rbtLanguageIni: TRadioButton;
+    rbtLanguageJson: TRadioButton;
+    rfcDemo: TPlRecentFilesComponent;
     rtdDemo: TPlRunTimeDesigner;
     smmDemo: TPlStylesMenuManager;
     tbsIntro: TTabSheet;
@@ -87,12 +93,6 @@ type
     tbsPlRuntimeDesigner: TTabSheet;
     tbsPlStyleMenuManager: TTabSheet;
     tmrLockWindow: TTimer;
-    rbtLanguageJson: TRadioButton;
-    rbtLanguageIni: TRadioButton;
-    rfcDemo: TPlRecentFilesComponent;
-    mitOptions: TMenuItem;
-    N4: TMenuItem;
-    imlFlags: TImageList;
     procedure AllowAutoUpdateMenu(Sender: TObject);
     procedure AllowSubfoldersInMenu(Sender: TObject);
     procedure ClearRecentFilesList(Sender: TObject);
@@ -103,6 +103,8 @@ type
     procedure LoadPositions(Sender: TObject);
     procedure LoadTextFile(Sender: TObject);
     procedure LockWindowUpdate(Sender: TObject);
+    procedure ChangeLanguage(Sender: TObject);
+    procedure lngDemoAfterLoad(Sender: TObject; AFile: string);
     procedure NewMenuFromFolder(Sender: TObject);
     procedure PerformLock(Sender: TObject);
     procedure PurgeRecentFilesList(Sender: TObject);
@@ -111,6 +113,8 @@ type
     procedure ShowLastMenuSelection(Sender: TObject);
     procedure StartRuntimeDesign(Sender: TObject);
     procedure SwitchStylePreview(Sender: TObject);
+    procedure UseIni(Sender: TObject);
+    procedure UseJson(Sender: TObject);
   private
     FIniFolder: string;
     FLanguagesFolder: string;
@@ -128,8 +132,35 @@ implementation
 
 uses
   System.IoUtils,
-  PlLanguageIniEngine, PlLanguageJsonEngine;
+  PlLanguageIniEngine, PlLanguageJsonEngine, PlLanguageTypes;
 
+resourcestring
+  SLoaded = 'Loaded';
+  SCursorPosition = 'Cursor position';
+{$REGION 'TPlLanguage demo'}
+
+
+procedure TfrmNonVisualCompDemo.lngDemoAfterLoad(Sender: TObject; AFile:
+    string);
+begin
+  ShowMessage(Format('%s %s.', [lngDemo.Translate(SLoaded), lngDemo.LangFile]));
+end;
+
+procedure TfrmNonVisualCompDemo.ChangeLanguage(Sender: TObject);
+begin
+  TPlLanguageServer.Language := mffLanguage.Value;
+end;
+
+procedure TfrmNonVisualCompDemo.UseIni(Sender: TObject);
+begin
+  TPlLanguageServer.FileFormat := lpIni;
+end;
+
+procedure TfrmNonVisualCompDemo.UseJson(Sender: TObject);
+begin
+  TPlLanguageServer.FileFormat := lpJson;
+end;
+{$ENDREGION}
 
 {$REGION 'TPlLockWndManager demo'}
 procedure TfrmNonVisualCompDemo.LockWindowUpdate(Sender: TObject);
@@ -253,7 +284,8 @@ begin
   baseFolder := TPath.GetPublicPath + '\morandotti.it\PlcVCLNonVisualcomponentsDemo\';
   ForceDirectories(baseFolder);
   FIniFolder := baseFolder + 'ini\';
-  FLanguagesFolder := baseFolder + 'Languages\';
+//  FLanguagesFolder := baseFolder + 'Languages\';
+  FLanguagesFolder := TPath.GetFullPath('..\..\Languages\');
   ForceDirectories(FIniFolder);
   ForceDirectories(FLanguagesFolder);
   {TPlMenuFromFolder Example: components setup}
@@ -265,20 +297,23 @@ begin
   {TplRecentFilesComponent Example: components setup}
   rtdDemo.IniName := GetIniName;
   {TPlLanguage Demo: component setup}
-  lngDemo.LangPath := FLanguagesFolder;
+  TPlLanguageServer.FileFormat := lpIni;
+  TPlLanguageServer.LanguagesFolder := FLanguagesFolder;
   mffLanguage.FolderName := FLanguagesFolder;
 end;
 
 procedure TfrmNonVisualCompDemo.FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y:
     Integer);
 begin
-  lblCursorPosition.Caption := Format('Cursor position: %d, %d', [X, Y]);
+  lblCursorPosition.Caption := Format('%s: %d, %d', [lngDemo.Translate(SCursorPosition), X, Y]);
 end;
 
 function TfrmNonVisualCompDemo.GetIniName: string;
 begin
   Result := FIniFolder + 'VCLNonVisualComponentsDemo.ini';
 end;
-{$REGION}
+
+
+{$ENDREGION}
 
 end.

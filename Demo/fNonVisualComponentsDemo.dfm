@@ -28,7 +28,7 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
     Top = 0
     Width = 766
     Height = 363
-    ActivePage = tbsPlRecentFilesComponent
+    ActivePage = tbsPlLanguage
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 760
@@ -186,7 +186,9 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
         Width = 113
         Height = 17
         Caption = 'Use &Json'
+        Enabled = False
         TabOrder = 0
+        OnClick = UseJson
       end
       object rbtLanguageIni: TRadioButton
         Left = 352
@@ -309,133 +311,6 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
         object mitClearList: TMenuItem
           Caption = 'Clear list'
           OnClick = ClearRecentFilesList
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Amakrits'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Aqua Light Slate'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Turquoise Gray'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows11 White Smoke'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows11 MineShaft'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Glow'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Mountain_Mist'
-            Checked = True
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Emerald'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows11 Polar Light'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Calypso SE'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows11 Modern Dark'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Flat UI Light'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows Designer Dark'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Stellar'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows11 Polar Dark'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows Designer'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Stellar Dark'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Win10IDE_Dark'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Windows11 Modern Light'
-            RadioItem = True
-          end
-          object TMenuItem
-            AutoCheck = True
-            AutoHotkeys = maManual
-            Caption = 'Calypso'
-            RadioItem = True
-          end
         end
         object mitPurgeList: TMenuItem
           Caption = 'PurgeList'
@@ -515,6 +390,7 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
     Top = 330
   end
   object lngDemo: TPlLanguage
+    AfterLoad = lngDemoAfterLoad
     CreateIfMissing = True
     ExcludeClasses.Strings = (
       'TImage'
@@ -553,6 +429,7 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
     ImageList = imlFlags
     MenuItem = mitLanguage
     WatchSubTree = False
+    OnClick = ChangeLanguage
     Left = 292
     Top = 330
   end
@@ -567,6 +444,7 @@ object frmNonVisualCompDemo: TfrmNonVisualCompDemo
   end
   object rfcDemo: TPlRecentFilesComponent
     RecentMenu = mitRecentFiles
+    OnFileSelected = ReloadSelected
     Left = 444
     Top = 330
   end
