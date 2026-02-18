@@ -1,0 +1,175 @@
+﻿[mitLanguage]
+Caption=Язык
+Hint=
+
+[mitFolder]
+Caption=П&апка
+Hint=
+
+[mitStyle]
+Caption=&Стиль
+Hint=
+
+[mitDesignerSave]
+Caption=Сохранить
+Hint=
+
+[mitDesignerLoad]
+Caption=Загрузить
+Hint=
+
+[mitDesignerEnd]
+Caption=Завершить
+Hint=
+
+[mitDesignerStart]
+Caption=Начать
+Hint=
+
+[mitDesigner]
+Caption=&Дизайнер
+Hint=
+
+[mitExit]
+Caption=В&ыход
+Hint=
+
+[mitPurgeList]
+Caption=Очистить список
+Hint=
+
+[mitClearList]
+Caption=Удалить список
+Hint=
+
+[mitRecentFiles]
+Caption=Недавние файлы
+Hint=
+
+[mitFile]
+Caption=&Файл
+Hint=
+
+[mitFile]
+Caption=&Параметры
+Hint=
+
+[pctMain.tbsPlStyleMenuManager.chkStylePreview]
+Caption=Предпросмотр стиля
+Hint=
+
+[pctMain.tbsPlStyleMenuManager.lblPlStyleMenuManager]
+Caption=TPlStyleMenuManager — это компонент, который отображает все стили приложения в меню.~~Нажмите пункт «Стили» в главном меню, чтобы увидеть список доступных стилей.~~Если вы хотите, чтобы элементы меню отображались с их собственными стилями, установите или снимите флажок справа.
+Hint=
+
+[pctMain.tbsPlStyleMenuManager]
+Caption=PlStyleMenuManager
+Hint=
+
+[pctMain.tbsPlRuntimeDesigner.lblPlRuntimeDemo]
+Caption=Демонстрация дизайна во время выполнения~~Чтобы начать перемещение и изменение размеров компонентов, используйте меню Дизайнер|Начать.~~Переместите курсор на любой объект интерфейса: он изменится на прямую стрелку для изменения размера или на крест для перемещения.~~Затем нажмите и перемещайте курсор, пока не получите желаемый результат.~~Когда закончите, используйте меню Дизайнер|Завершить.~~Чтобы сохранить изменения, используйте меню Дизайнер|Сохранить; вы можете загрузить сохранённую позицию в любое время через меню Дизайнер|Загрузить.
+Hint=
+
+[pctMain.tbsPlRuntimeDesigner]
+Caption=PlRuntimeDesigner
+Hint=
+
+[pctMain.tbsPlLockWndManager.btnStartLock]
+Caption=Начать
+CommandLinkHint=
+DisabledImageName=
+HotImageName=
+PressedImageName=
+SelectedImageName=
+StylusHotImageName=
+Hint=
+
+[pctMain.tbsPlLockWndManager.memLockWnd]
+Hint=
+
+[pctMain.tbsPlLockWndManager.lblPlLockWndManager]
+Caption=TPlLockWndManager~~~~`TPlLockWndManager` — это компонент Delphi, который управляет блокировкой перерисовки целевого окна с помощью сообщения Windows `WM_SETREDRAW`.~~Это полезно при пакетных обновлениях контролов или форм, предотвращая мерцание и ненужные перерисовки до завершения операции.~~~~Нажмите кнопку «Начать»: содержимое поля будет обновляться каждую секунду. Однако окно не будет перерисовываться в течение 5 секунд. Затем вы увидите в поле результат обновлений.
+Hint=
+
+[pctMain.tbsPlLockWndManager]
+Caption=PlLockWndManager
+Hint=
+
+[pctMain.tbsPlLanguage.rbtLanguageIni]
+Caption=Использовать &Ini
+Hint=
+
+[pctMain.tbsPlLanguage.rbtLanguageJson]
+Caption=Использовать &Json
+Hint=
+
+[pctMain.tbsPlLanguage.lblPlLanguage]
+Caption=TPlLanguage~~~~Самый простой способ перевести интерфейс во время выполнения.~~~~Просто нажмите меню «Язык» и выберите один из доступных вариантов. Интерфейс обновится в реальном времени.
+Hint=
+
+[pctMain.tbsPlLanguage]
+Caption=PlLanguage
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.flbRecent]
+Mask=*.txt
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.btnLoad]
+Caption=&Загрузить
+CommandLinkHint=
+DisabledImageName=
+HotImageName=
+PressedImageName=
+SelectedImageName=
+StylusHotImageName=
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.memTest]
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.lblPlRecentFiles]
+Caption=TPlRecentFilesComponent~~~~PlRecentFilesComponent — это оболочка вокруг класса TPlRecentFileManager.~~Его цель — упростить управление списком недавних файлов из формы, без необходимости вручную создавать или управлять жизненным циклом менеджера.~~~~Загрузите текстовый файл и откройте меню Файл->Недавние файлы, чтобы увидеть список.~~Используйте пункт «Очистить», чтобы очистить список, и «Пуржировать», чтобы удалить только недействительные записи (переименованные или удалённые файлы).~~~~Данные сохраняются в файле VCLNonVisualComponentsDemo.ini в вашей папке Temp, пока вы его не удалите.
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent]
+Caption=PlRecentFilesComponent
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.chkAutoUpdateMenu]
+Caption=Автообновление меню
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.chkSearchForSubfolders]
+Caption=Поиск в подпапках
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.douMenuFromFolder]
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.lblLastMenuItemSelectd]
+Caption=
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.lblPlMenuFromFolder]
+Caption=TMenuFromFolderDemo~~~~Динамически создаёт элементы меню на основе содержимого папки файловой системы.~~Выберите папку в дереве и откройте меню «Папка», чтобы увидеть результат, затем нажмите на элемент.
+Hint=
+
+[pctMain.tbsPlMenuFromFolder]
+Caption=PlMenuFromFolder
+Hint=
+
+[pctMain.tbsIntro]
+Caption=&Введение
+Hint=
+
+[pctMain]
+Hint=
+
+[lblCursorPosition]
+Caption=Позиция курсора: 0,0
+Hint=
+
+[strings]
+EC1D2718=Загружено
+32236CDE=Позиция курсора

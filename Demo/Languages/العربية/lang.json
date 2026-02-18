@@ -1,0 +1,10 @@
+{
+  "language": {
+    "id": "ar-SA",
+    "name": "Arabic",
+    "nativeName": "العربية",
+    "isRightToLeft": true,
+    "uiFont": "Segoe UI",
+    "fallbackFont": "Arial"
+  }
+}

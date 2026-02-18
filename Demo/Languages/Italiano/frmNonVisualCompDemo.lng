@@ -1,0 +1,162 @@
+﻿[mitLanguage]
+Caption=&Lingua
+Hint=
+
+[mitFolder]
+Caption=&Cartella
+Hint=
+
+[mitStyle]
+Caption=&Stile
+Hint=
+
+[mitDesignerSave]
+Caption=&Salva
+Hint=
+
+[mitDesignerLoad]
+Caption=&Carica
+Hint=
+
+[mitDesignerEnd]
+Caption=&Fine
+Hint=
+
+[mitDesignerStart]
+Caption=&Avvia
+Hint=
+
+[mitDesigner]
+Caption=&Designer
+Hint=
+
+[mitExit]
+Caption=&Esci
+Hint=
+
+[mitPurgeList]
+Caption=&Pulisci elenco
+Hint=
+
+[mitClearList]
+Caption=&Cancella elenco
+Hint=
+
+[mitRecentFiles]
+Caption=&File recenti
+Hint=
+
+[mitFile]
+Caption=&File
+Hint=
+
+[mitOptions]
+Caption=Op&zioni
+Hint=
+
+[pctMain.tbsPlStyleMenuManager.chkStylePreview]
+Caption=&Anteprima stile
+Hint=
+
+[pctMain.tbsPlStyleMenuManager.lblPlStyleMenuManager]
+Caption=TPlStyleMenuManager è un componente che mostra tutti gli stili dell'applicazione in un menu.~~Fai clic sulla voce "Stili" nel menu principale per vedere l'elenco degli stili disponibili.~~Se vuoi che gli elementi del menu vengano renderizzati con i rispettivi stili, seleziona o deseleziona la casella a destra.
+Hint=
+
+[pctMain.tbsPlStyleMenuManager]
+Caption=PlStyleMenuManager
+Hint=
+
+[pctMain.tbsPlRuntimeDesigner.lblPlRuntimeDemo]
+Caption=Demo di progettazione runtime~~Per iniziare a spostare e ridimensionare i componenti, usa il menu Designer|Avvia.
+~~Sposta il cursore su un qualsiasi oggetto dell'interfaccia: diventerà una freccia per ridimensionare o un mirino per spostare. ~~Poi fai clic e muovi il mouse finché non ottieni l'effetto desiderato. ~~Quando hai finito, usa il menu Designer|Fine.
+~~Per rendere persistenti le modifiche, usa il menu Designer|Salva; puoi ricaricare una posizione salvata in qualsiasi momento con il menu Designer|Carica.
+Hint=
+
+[pctMain.tbsPlRuntimeDesigner]
+Caption=PlRuntimeDesigner
+Hint=
+
+[pctMain.tbsPlLockWndManager.btnStartLock]
+Caption=&Avvia
+CommandLinkHint=
+Hint=
+
+[pctMain.tbsPlLockWndManager.memLockWnd]
+Hint=
+
+[pctMain.tbsPlLockWndManager.lblPlLockWndManager]
+Caption=TPlLockWndManager~~~~`TPlLockWndManager` è un componente Delphi che gestisce il blocco del ridisegno di una finestra tramite il messaggio Windows `WM_SETREDRAW`.~~E' utile durante aggiornamenti massivi di controlli o form, evitando sfarfallii e ridisegni inutili fino al termine dell’operazione.~~~~Fai clic sul pulsante Avvia e il contenuto della casella sarà aggiornato ogni secondo. Tuttavia, la finestra non sarà ridisegnata per 5 secondi. Poi vedrai nella casella il risultato degli aggiornamenti.
+Hint=
+
+[pctMain.tbsPlLockWndManager]
+Caption=PlLockWndManager
+Hint=
+
+[pctMain.tbsPlLanguage.rbtLanguageIni]
+Caption=Usa &Ini
+Hint=
+
+[pctMain.tbsPlLanguage.rbtLanguageJson]
+Caption=Usa &Json
+Hint=
+
+[pctMain.tbsPlLanguage.lblPlLanguage]
+Caption=TPlLanguage~~~~Il modo più semplice per tradurre la tua GUI in runtime.~~~~Fai clic sul menu Lingua e scegli uno degli idiomi disponibili. L'interfaccia sarà aggiornata in tempo reale.
+Hint=
+
+[pctMain.tbsPlLanguage]
+Caption=PlLanguage
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.flbRecent]
+Mask=*.txt
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.btnLoad]
+Caption=&Carica
+CommandLinkHint=
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.memTest]
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.lblPlRecentFiles]
+Caption=TPlRecentFilesComponent~~~~PlRecentFileComponent è un componente wrapper attorno alla classe TPlRecentFileManager.~~Serve per gestire facilmente i file recenti da un Form, senza dover istanziare manualmente o gestire il ciclo di vita del~~manager sottostante.~~~~Carica un file di testo e apri il menu File->File recenti per vedere l'elenco. ~~Usa "Cancella" per svuotare l'elenco e "Pulisci" per eliminare solo le voci non valide (file rinominati o eliminati).~~~~I dati sono salvati nel file VCLNonVisualComponentsDemo.ini nella tua cartella Temp, finché non lo elimini.
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent]
+Caption=PlRecentFilesComponent
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.chkAutoUpdateMenu]
+Caption=&Aggiorna menu automaticamente
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.chkSearchForSubfolders]
+Caption=&Cerca sottocartelle
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.douMenuFromFolder]
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.lblLastMenuItemSelectd]
+Caption=
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.lblPlMenuFromFolder]
+Caption=TMenuFromFolderDemo~~~~Costruisce dinamicamente voci di menu dal contenuto di una cartella del filesystem.~~Seleziona una cartella nell'albero e apri il menu Cartella per vedere l'effetto, poi fai clic su un elemento.
+Hint=
+
+[pctMain.tbsPlMenuFromFolder]
+Caption=PlMenuFromFolder
+Hint=
+
+[pctMain.tbsIntro]
+Caption=&Intro
+Hint=
+
+[pctMain]
+Hint=
+
+[lblCursorPosition]
+Hint=

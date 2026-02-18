@@ -1,0 +1,7 @@
+[Language]
+Id=ru-RU
+Name=Russian
+NativeName=Русский
+IsRightToLeft=0
+UIFont=Segoe UI
+FallbackFont=Arial

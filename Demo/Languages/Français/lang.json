@@ -1,0 +1,10 @@
+{
+  "language": {
+    "id": "fr-FR",
+    "name": "French",
+    "nativeName": "Français",
+       "isRightToLeft": false,
+    "uiFont": "Segoe UI",
+    "fallbackFont": "Arial"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "language": {
+    "id": "en-GB",
+    "name": "English",
+    "nativeName": "English",
+       "isRightToLeft": false,
+    "uiFont": "Segoe UI",
+    "fallbackFont": "Arial"
+  }
+}

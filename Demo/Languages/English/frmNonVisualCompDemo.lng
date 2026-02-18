@@ -1,0 +1,177 @@
+﻿[mitLanguage]
+Caption=Language
+Hint=
+
+[mitFolder]
+Caption=F&older
+Hint=
+
+[mitStyle]
+Caption=&Style
+Hint=
+
+[mitDesignerSave]
+Caption=Save
+Hint=
+
+[mitDesignerLoad]
+Caption=Load
+Hint=
+
+[mitDesignerEnd]
+Caption=End
+Hint=
+
+[mitDesignerStart]
+Caption=Start
+Hint=
+
+[mitDesigner]
+Caption=&Designer
+Hint=
+
+[mitExit]
+Caption=E&xit
+Hint=
+
+[mitPurgeList]
+Caption=PurgeList
+Hint=
+
+[mitClearList]
+Caption=Clear list
+Hint=
+
+[mitRecentFiles]
+Caption=Recent Files
+Hint=
+
+[mitFile]
+Caption=&File
+Hint=
+
+[mitFile]
+Caption=&Options
+Hint=
+
+[pctMain.tbsPlStyleMenuManager.chkStylePreview]
+Caption=Style preview
+Hint=
+
+[pctMain.tbsPlStyleMenuManager.lblPlStyleMenuManager]
+Caption=TPlStyleMenuManager is a component that displays all the application's styles in a menu.~~Click the "Styles" item in the main menu to see a list of available styles.~~If you want menu items to be rendered with their respective styles, select or deselect the chekbox on the right.
+Hint=
+
+[pctMain.tbsPlStyleMenuManager]
+Caption=PlStyleMenuManager
+Hint=
+
+[pctMain.tbsPlRuntimeDesigner.lblPlRuntimeDemo]
+Caption=Runtime Design Demo~~To begin moving and resizing components, use the Designer|Start menu.
+~~Move a cursor over any interface object: it will change to a straight arrow to resize it, or a crosshair to move it. ~~Thene click and move the mouse cursor until you achieve the desired effect. ~~When you're finished, use the Designer|End menu.
+~~To make your changes persistent, use the Designer|Save menu; you can reload a saved position at any time with the Designer|Load menu.
+Hint=
+
+[pctMain.tbsPlRuntimeDesigner]
+Caption=PlRuntimeDesigner
+Hint=
+
+[pctMain.tbsPlLockWndManager.btnStartLock]
+Caption=Start
+CommandLinkHint=
+DisabledImageName=
+HotImageName=
+PressedImageName=
+SelectedImageName=
+StylusHotImageName=
+Hint=
+
+[pctMain.tbsPlLockWndManager.memLockWnd]
+Hint=
+
+[pctMain.tbsPlLockWndManager.lblPlLockWndManager]
+Caption=TPlLockWndManagr~~~~`TPlLockWndManager` is a Delphi component that manages redraw locking on a target window using the Windows message `WM_SETREDRAW`.  ~~This is useful when performing batch updates on controls or forms, preventing flicker and unnecessary redraws until the operation is complete.~~~~Click the Start button and the box content will be updated every second. Howewer, the windows will not repainted for 5 seconds. Then you will see in the box the result of the updates.
+Hint=
+
+[pctMain.tbsPlLockWndManager]
+Caption=PlLockWndManager
+Hint=
+
+[pctMain.tbsPlLanguage.rbtLanguageIni]
+Caption=Use &Ini
+Hint=
+
+[pctMain.tbsPlLanguage.rbtLanguageJson]
+Caption=Use &Json
+Hint=
+
+[pctMain.tbsPlLanguage.lblPlLanguage]
+Caption=TPlLanguage~~~~The simplest way to translate your GUI in runtime.~~~~Just click the Language menu and choose one of the available idioms. The GUI will be updated in real time.
+Hint=
+
+[pctMain.tbsPlLanguage]
+Caption=PlLanguage
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.flbRecent]
+Mask=*.txt
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.btnLoad]
+Caption=&Load
+CommandLinkHint=
+DisabledImageName=
+HotImageName=
+PressedImageName=
+SelectedImageName=
+StylusHotImageName=
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.memTest]
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent.lblPlRecentFiles]
+Caption=TPlRecentFilesComponent~~~~PlRecentFileComponent is a wrapper component around TPlRecentFileManager class.~~Its purpose is to make recent-file management easily usable from a Form, without requiring manual instantiation or lifecycle handling of the underlying~~manager class.~~~~Load some text file and open the File->Recent File menu to see the list. ~~Use the "Clear" menu item to clear the list and "Purge" menu item to delete only invalid entries (i.e. renamed or deleted files).~~~~Data are stored in VCLNonVisualComponentsDemo.ini file in your Temp folder, until you don't delete it.
+Hint=
+
+[pctMain.tbsPlRecentFilesComponent]
+Caption=PlRecentFilesComponent
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.chkAutoUpdateMenu]
+Caption=Auto Update Menu
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.chkSearchForSubfolders]
+Caption=Search for subfolders
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.douMenuFromFolder]
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.lblLastMenuItemSelectd]
+Caption=
+Hint=
+
+[pctMain.tbsPlMenuFromFolder.lblPlMenuFromFolder]
+Caption=TMenuFromFolderDemo~~~~Dynamically builds menuitems from the contents of a filesystem folder.~~Select a folder in the tree and open the Folder menu to see the effect, then click an item.
+Hint=
+
+[pctMain.tbsPlMenuFromFolder]
+Caption=PlMenuFromFolder
+Hint=
+
+[pctMain.tbsIntro]
+Caption=&Intro
+Hint=
+
+[pctMain]
+Hint=
+
+[lblCursorPosition]
+Caption=Cursor position: 0,0
+Hint=
+
+[strings]
+EC1D2718=Loaded 
+DA6E3974=Cursor position 

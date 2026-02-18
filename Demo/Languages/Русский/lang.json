@@ -1,0 +1,10 @@
+{
+  "language": {
+    "id": "ru-RU",
+    "name": "Russiam",
+    "nativeName": "Русский",
+       "isRightToLeft": false,
+    "uiFont": "Segoe UI",
+    "fallbackFont": "Arial"
+  }
+}

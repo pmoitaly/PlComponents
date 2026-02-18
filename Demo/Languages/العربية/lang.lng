@@ -1,0 +1,7 @@
+[Language]
+Id=ar-SA
+Name=Arabic
+NativeName=العربية
+IsRightToLeft=1
+UIFont=Segoe UI
+FallbackFont=Arial
