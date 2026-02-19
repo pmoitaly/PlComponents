@@ -29,11 +29,11 @@ The collection currently includes the following packages:
 - **[plc.Vcl.Db.DataControls](pk_pl_vcl_db_datacontrols.md)**  
   A collection of DB‑bound VCL controls.  
   It offers lightweight alternatives to Delphi’s LiveBindings system by relying on the native data‑binding architecture.  
-  **Currently under development.**
+  **Not yet released. Currently under development.**
 
 - **[Pl.Vcl.VisualComponents](pk_pl_vcl_visualcomponents.md)**  
   A small set of visual components that implement common UI behaviors and patterns, helping developers build consistent and maintainable interfaces.
-  **Currently under development.**
+  **Not yet released. Currently under development.**
 
 ---
 
