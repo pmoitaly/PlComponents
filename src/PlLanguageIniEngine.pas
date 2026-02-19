@@ -25,7 +25,7 @@ unit PlLanguageIniEngine;
  *******************************************************************************}
 
 { *************************************************************
-  /// Project: PlComponents
+ /// Project: PlComponents
  /// Unit: PlLanguageIniEngine
  /// This unit contains:
  /// - TPlLanguageCustomIniEngine: an abstract ini based engine
@@ -52,7 +52,6 @@ type
     procedure WriteComponentData(LangIni: TMemIniFile; AComponent: TComponent);
     procedure LoadStringsSection(AIni: TMemIniFile;
       AStore: IPlTranslationStore);
-    function ReadLanguageInfo(const AFile: string): TPlLanguageInfo;
   protected
     /// <summary>
     /// Creates am instance of the mtadata loader.
@@ -94,7 +93,6 @@ type
     procedure LoadTranslation(ASource: TComponent; const AFile: string; AStore:
         IPlTranslationStore = nil); override;
 
-    function LoadLanguageInfo(const AFile: string): TPlLanguageInfo; override;
 
     /// <summary>
     /// Saves translatable properties of components to an INI file.
@@ -189,12 +187,6 @@ begin
   finally
     ini.Free;
   end;
-end;
-
-function TPlLanguageCustomIniEngine.ReadLanguageInfo(
-  const AFile:string): TPlLanguageInfo;
-begin
-
 end;
 
 procedure TPlLanguageCustomIniEngine.LoadStringsSection(
