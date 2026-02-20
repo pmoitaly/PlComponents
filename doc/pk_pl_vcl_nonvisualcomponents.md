@@ -61,10 +61,10 @@ The package currently includes the following components:
 - **[PlRuntimeDesigner](pl_runtime_designer.md)**  
   Enables runtime editing of forms: selecting, moving, resizing controls, and persisting bounds.
 
-- **[PlStylesMenuManager](pl_language_system.md)**  
+- **[PlStylesMenuManager](pl_style_menu_manager.md)**  
   Populates menus with available VCL styles, supports custom styles, and applies them at runtime.
 
-- **[Translation System](planned)**  
+- **[Translation System](pl_language_system.md)**  
   A lightweight, extensible runtime translation system for localizing applications.  
 
 ---
