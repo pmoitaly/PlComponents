@@ -18,7 +18,7 @@ Pl Components is intended for open‑source developers who value **clean archite
 
 The collection currently includes the following packages:
 
-- **[Pl.Vcl.NonVisualComponents](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_nonvisualcomponents.md)**  
+- **[plc.Vcl.NonVisualComponents](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_nonvisualcomponents.md)**  
   A set of non‑visual components focused on **automation**, **customization**, and **state persistence**.  
   These components are designed to simplify recurring tasks and provide application‑level services with minimal configuration.
 
@@ -31,7 +31,7 @@ The collection currently includes the following packages:
   It offers lightweight alternatives to Delphi’s LiveBindings system by relying on the native data‑binding architecture.  
   **Not yet released. Currently under development.**
 
-- **[Pl.Vcl.VisualComponents](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_visualcomponents.md)**  
+- **[plc.Vcl.VisualComponents](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_visualcomponents.md)**  
   A small set of visual components that implement common UI behaviors and patterns, helping developers build consistent and maintainable interfaces.
   **Not yet released. Currently under development.**
 
@@ -63,9 +63,9 @@ Please refer to the linked documentation for:
 
 ## Roadmap
 
-* v0.8.0: First release of Pl.Vcl.NonVisualComponents and Pl.Se.Components
+* v0.8.0: First release of plc.Vcl.NonVisualComponents and plc.Se.Components
 * v0.8.1: First release of plc.Vcl.Db.DataControls
-* v0.8.2: First release of plc.Vcl.isualComponents
+* v0.8.2: First release of plc.Vcl.VisualComponents
 * v0.9.0: First official beta release
 * v1.0.0: First non working release (see Murphy's laws)
 * v1.1.0: First working release
