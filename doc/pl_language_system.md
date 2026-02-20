@@ -27,8 +27,6 @@ It is ideal for applications that require:
 
 The Translation System is composed of several units, each with a clear responsibility:
 
-
-```
 [TPlLanguageServer](pl_language_server.md)
 [TPlLanguage](pl_language.md)
    |
@@ -46,7 +44,7 @@ The Translation System is composed of several units, each with a clear responsib
    +-- lpJson     -> [TPlLanguageJsonEngine](pl_language_json_loader.md)
 [TPlLanguage](pl_translation_store.md)
 
-```
+
 
 ---
 
