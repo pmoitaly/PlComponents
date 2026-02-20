@@ -18,20 +18,20 @@ Pl Components is intended for open‑source developers who value **clean archite
 
 The collection currently includes the following packages:
 
-- **[Pl.Vcl.NonVisualComponents](pk_pl_vcl_nonvisualcomponents.md)**  
+- **[Pl.Vcl.NonVisualComponents](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_nonvisualcomponents.md)**  
   A set of non‑visual components focused on **automation**, **customization**, and **state persistence**.  
   These components are designed to simplify recurring tasks and provide application‑level services with minimal configuration.
 
-- **[plc.SE.Components](pk_pl_se_components.md)**  
+- **[plc.SE.Components](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_se_components.md)**  
   Utility components for SynEdit/SynEditor.  
   They aim to simplify common editor‑related tasks and extend SynEditor with practical, ready‑to‑use features.
 
-- **[plc.Vcl.Db.DataControls](pk_pl_vcl_db_datacontrols.md)**  
+- **[plc.Vcl.Db.DataControls](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_db_datacontrols.md)**  
   A collection of DB‑bound VCL controls.  
   It offers lightweight alternatives to Delphi’s LiveBindings system by relying on the native data‑binding architecture.  
   **Not yet released. Currently under development.**
 
-- **[Pl.Vcl.VisualComponents](pk_pl_vcl_visualcomponents.md)**  
+- **[Pl.Vcl.VisualComponents](https://github.com/pmoitaly/PlComponents/blob/main/doc/pk_pl_vcl_visualcomponents.md)**  
   A small set of visual components that implement common UI behaviors and patterns, helping developers build consistent and maintainable interfaces.
   **Not yet released. Currently under development.**
 
