@@ -1,29 +1,31 @@
-# Pl Language System
-
-## Overview
-
-The PlComponents library comes with a lightweight, extensible, and fully off-line, runtime‑oriented localization framework designed for VCL applications.  
-It provides a modular architecture that separates:
-
-- **storage** of translated strings  
-- **loading** of language metadata  
-- **encoding/decoding** of translation files  
-- **runtime language switching**  
-- **integration with UI controls**  
-
-The system is built to be **simple**, **non‑intrusive**, and **easy to extend**, avoiding the complexity of traditional resource‑based localization.
-
-It is ideal for applications that require:
-
-- dynamic language switching  
-- user‑editable translation files  
-- JSON/INI‑based localization  
-- custom translation engines  
-- integration with non‑visual components  
+# Pl Translation System  
+**Version:** 0.8  
+**Category:** Runtime Localization Framework  
+**Project:** PlComponents  
 
 ---
 
-## Architecture
+## Introduction
+This document provides an overview of the **Pl Translation System**, the runtime localization framework included in the `plVCLNonVisualComponents` package.  
+Its purpose is to describe the architecture, components, and workflow of the system, ensuring a consistent understanding for developers integrating localization features into VCL applications.
+
+---
+
+## Body
+
+### 1. Overview of the Translation System
+The Pl Translation System is a **lightweight, extensible, runtime‑oriented localization framework** for Delphi VCL applications.  
+It enables applications to load, manage, and switch languages dynamically, using human‑readable formats such as **INI** and **JSON**.
+
+The system is designed to be:
+- **Modular** — each responsibility is isolated in its own unit  
+- **Extensible** — developers can add custom engines or loaders  
+- **Non‑intrusive** — no need for resource DLLs or recompilation  
+- **Runtime‑driven** — languages can be changed while the application is running  
+
+---
+
+### 2. Architecture Overview
 
 The Translation System is composed of several units, each with a clear responsibility:
 
@@ -45,52 +47,55 @@ The Translation System is composed of several units, each with a clear responsib
 
 ---
 
-## Features
+### 3. Workflow
 
-- **Runtime language switching**  
-  No recompilation required.
+A typical workflow for using the Translation System is:
 
-- **Multiple file formats**  
-  INI and JSON supported out of the box.
+1. **Register translation engines**  
+   Register TPlLanguage instances into TPlLanguageServer.
+2. **Activate a language**  
+   The language server sets the active language.
+3. **Load translation files**  
+   The engine populates the translation store.
+4. **Translate UI elements**  
+   Components query the server or store.
+5. **Switch language at runtime**  
+   The server notifies subscribed components.
+   
+---
 
-- **Extensible architecture**  
-  Add custom engines or loaders easily.
+### 4. Example Usage
 
-- **Human‑editable translation files**  
-  Ideal for non‑technical translators.
-
-- **Non‑intrusive integration**  
-  Works with any VCL application.
-
-- **Unicode‑safe**  
-  Full UTF‑8/UTF‑16 support.
+See Demo project.
 
 ---
 
-## Example Usage
-
-See Demo application.
-
----
-
-## Integration Notes
-
-- The system is **non‑visual** and can be dropped into any project.  
-- Engines can be replaced or extended without modifying application code.  
-- Translation files can be reloaded at runtime.  
-- The system is designed to work well with other VCL components.
+### 5. Integration Notes
+- The system is fully **non‑visual** and can be used in any VCL project.  
+- Translation files are **human‑editable**, ideal for non‑technical translators.  
+- Engines and loaders can be replaced or extended.  
+- Works seamlessly with other PlComponents.  
+- Supports full **Unicode** and UTF‑8/UTF‑16 workflows.
 
 ---
 
-## Roadmap
+## Conclusion
+The Pl Translation System provides a clean, modular, and extensible foundation for runtime localization in Delphi VCL applications.  
+By separating responsibilities across well‑defined units, it ensures maintainability and flexibility while remaining easy to integrate.
 
-- More translation engines (XML/YAML)    
+Future enhancements may include:
+- More translation engines (like XML/YAML)    
 - Editor for translation files  
-- Real time on line translation using external services  
+- Real-time, online translation using external services  
 
 ---
 
-## License
+## References
+- Delphi VCL Documentation  
+- JSON and INI format specifications  
+- Internal PlComponents architecture notes  
 
-Released under the MIT License.  
-See the `LICENSE` file for details.
+---
+
+## Appendix
+Additional examples, advanced usage patterns, and engine implementation details may be added in future revisions of this document.
