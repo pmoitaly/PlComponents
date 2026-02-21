@@ -29,21 +29,21 @@ The system is designed to be:
 
 The Translation System is composed of several units, each with a clear responsibility:
 
-* [TPlLanguageServer](pl_language_server.md)
-* [TPlLanguage](pl_language.md)
-* [TPlLanguageEngineFactory](pl_language_engine_factory.md)
-* [TPlLanguageEngine](pl_language_engine.md)
-* | +-- lpIni      -> [TPlLanguageIniEngine](pl_language_ini_engine.md)
-* | +-- lpIniFlat  -> [TPlLanguageIniEngine](pl_language_ini_engine.md)
-* | +-- lpJson     -> [TPlLanguageJsonEngine](pl_language_json_engine.md)
-* | +-- lpCustom   -> [user-defined](implementing_custom_language_engine.md)
-* [IPlLanguageLoader](pl_language.md)
-* | +-- lpIni      -> [TPlLanguageIniEngine](pl_language_ini_loader.md)
-* | +-- lpIniFlat  -> [TPlLanguageIniEngine](pl_language_ini_loader.md)
-* | +-- lpJson     -> [TPlLanguageJsonEngine](pl_language_json_loader.md)
+* [`TPlLanguageServer`](pl_language_server.md)
+* [`TPlLanguage`](pl_language.md)
+* [`TPlLanguageEngineFactory`](pl_language_engine_factory.md)
+* [`TPlLanguageEngine`](pl_language_engine.md)
+* | +-- `lpIni`      -> [`TPlLanguageIniEngine`](pl_language_ini_engine.md)
+* | +-- `lpIniFlat`  -> [`TPlLanguageIniEngine`](pl_language_ini_engine.md)
+* | +-- `lpJson`     -> [`TPlLanguageJsonEngine`](pl_language_json_engine.md)
+* | +-- `lpCustom`   -> [user-defined](implementing_custom_language_engine.md)
+* [`IPlLanguageLoader`](pl_ilanguage_info_loader.md)
+* | +-- lpIni      -> [`TPlLanguageIniEngine`](pl_language_info_ini_loader.md)
+* | +-- lpIniFlat  -> [`TPlLanguageIniEngine`](pl_language_info_ini_loader.md)
+* | +-- lpJson     -> [`TPlLanguageJsonEngine`](pl_language_info_json_loader.md)
 
-* [TPlLanguageEncoder](pl_language_encoder.md)
-* [TPlTanslationStore](pl_translation_store.md)
+* [`TPlLineEncoder`](pl_line_encoder.md)
+* [`TPlTanslationStore`](pl_translation_store.md)
 
 ---
 
