@@ -232,9 +232,9 @@ while keeping higher‑level components simple and focused.
 
 ## References
 - Pl Translation System Architecture  
-- `TPlLineEncoder` key generation  
-- `IPlLanguageEngine` persistence interfaces  
-- `TPlLanguage` and `TPlLanguageServer` usage patterns  
+- [`TPlLineEncoder`](pl_line_encoder.md) key generation  
+- [`IPlLanguageEngine`](pl_ilanguage_engine.md) persistence interfaces  
+- [`TPlLanguage`](pl_language.md) and [`TPlLanguageServer`](pl_language_server.md) usage patterns  
 
 ---
 
